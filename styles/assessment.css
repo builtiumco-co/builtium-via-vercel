@@ -3797,6 +3797,81 @@ body {
 }
 
 /* Post-Payment Scheduling Card Styling */
+/* Health Card Inline Drawer & Expand/Collapse Styling */
+.bga-health-card__action-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.bga-health-card__btn-toggle {
+  background: #F1F5F9;
+  border: 1px solid #CBD5E1;
+  color: #0F172A;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 100px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.bga-health-card__btn-toggle:hover {
+  background: #E2E8F0;
+  border-color: #94A3B8;
+}
+
+.bga-health-card__drawer {
+  display: none;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px dashed #CBD5E1;
+  flex-direction: column;
+  gap: 12px;
+  animation: fadeIn 0.25s ease forwards;
+}
+
+.bga-health-card__drawer.open {
+  display: flex;
+}
+
+.bga-health-drawer-block {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.bga-health-drawer-block__lbl {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: #64748B;
+  letter-spacing: 0.12em;
+  font-weight: 700;
+}
+
+.bga-health-drawer-block__val {
+  font-size: 13.5px;
+  color: #334155;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.bga-health-drawer-block--impact {
+  background: #FFFBEB;
+  border-left: 3px solid #F59E0B;
+  padding: 10px 14px;
+  border-radius: 6px;
+}
+
+.bga-health-drawer-block--fix {
+  background: #F0FDF4;
+  border-left: 3px solid #10B981;
+  padding: 10px 14px;
+  border-radius: 6px;
+}
+
+/* Post-Payment Scheduling Card Styling */
 .bga-scheduling-card {
   background: #FAFAFA;
   border: 2px solid #3A7BFF;
@@ -3821,51 +3896,160 @@ body {
   margin-bottom: 24px;
 }
 
-/* Responsive Breakpoints */
+/* Enhanced Responsive Mobile Breakpoints */
 @media (max-width: 768px) {
-  .bga-container--exec {
-    padding: 0 16px;
+  .bga-container--exec,
+  .bga-container {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+
+  .bga-exec-top-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 16px 0;
+    margin-bottom: 24px;
+  }
+
+  .bga-exec-top-header__meta {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .bga-exec-title {
+    font-size: clamp(26px, 7vw, 36px);
+    margin: 8px 0 16px;
+  }
+
+  .bga-exec-section-title {
+    font-size: clamp(22px, 6vw, 30px);
+  }
+
+  .bga-exec-section {
+    padding: 32px 0;
   }
 
   .bga-meta-grid {
     grid-template-columns: 1fr;
+    border-radius: 12px;
+  }
+
+  .bga-meta-cell {
+    padding: 14px 16px;
+  }
+
+  .bga-score-card {
+    padding: 28px 16px;
+    border-radius: 16px;
+  }
+
+  .bga-score-card__num {
+    font-size: clamp(52px, 14vw, 76px);
+  }
+
+  .bga-score-card__stage-name {
+    font-size: 24px;
+    margin-bottom: 24px;
+  }
+
+  .bga-stage-stepper {
+    padding-top: 16px;
+    gap: 12px;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 8px;
   }
 
   .bga-health-grid {
     grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .bga-health-card {
+    padding: 20px 16px;
+  }
+
+  .bga-health-card__pct {
+    font-size: 24px;
+  }
+
+  .bga-opp-card {
+    padding: 20px 16px;
+  }
+
+  .bga-opp-card__title {
+    font-size: 20px;
   }
 
   .bga-opp-card__grid {
     grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .bga-roadmap-card {
+    padding: 20px 16px;
+  }
+
+  .bga-roadmap-card__title {
+    font-size: 18px;
   }
 
   .bga-projection-grid {
     grid-template-columns: 1fr;
+    gap: 16px;
   }
 
-  .bga-bm-header {
-    grid-template-columns: 1.2fr repeat(3, 1fr);
-    font-size: 11px;
+  .bga-proj-card {
+    padding: 20px 16px;
   }
 
+  .bga-benchmark-card {
+    padding: 20px 16px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .bga-bm-header,
   .bga-bm-row {
-    grid-template-columns: 1.2fr repeat(3, 1fr);
-    font-size: 12px;
+    min-width: 480px;
+    grid-template-columns: 1.5fr repeat(3, 1fr);
+  }
+
+  .bga-blueprint-hero-card {
+    padding: 24px 16px;
+  }
+
+  .bga-blueprint-title {
+    font-size: clamp(24px, 6vw, 34px);
   }
 
   .bga-blueprint-features {
     grid-template-columns: 1fr;
   }
 
+  .bga-blueprint-price-box {
+    padding: 24px 16px;
+  }
+
+  .bga-blueprint-price {
+    font-size: 48px;
+  }
+
+  .bga-comp-card {
+    padding: 20px 16px;
+  }
+
   .bga-comp-grid {
     grid-template-columns: 1fr;
+    gap: 14px;
   }
 
   .bga-circles-stepper {
     overflow-x: auto;
-    padding-bottom: 12px;
+    padding-bottom: 16px;
     justify-content: flex-start;
-    gap: 32px;
+    gap: 28px;
+    -webkit-overflow-scrolling: touch;
   }
 
   .bga-circles-stepper::before {
@@ -3875,23 +4059,45 @@ body {
   .bga-pattern-card {
     flex-direction: column;
     gap: 12px;
+    padding: 20px 16px;
   }
 
-  .bga-blueprint-hero-card {
-    padding: 28px 20px;
+  .bga-transition-section {
+    padding: 36px 16px;
+    margin: 32px 0;
+  }
+
+  .bga-transition-pills {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .bga-trans-pill {
+    width: 100%;
+    text-align: center;
+  }
+
+  .bga-risk-card {
+    padding: 24px 16px;
   }
 
   .bga-final-cta-box {
-    padding: 36px 20px;
+    padding: 32px 16px;
   }
 
   .bga-modal-card {
-    padding: 24px 20px;
+    padding: 20px 16px;
+    max-height: 90vh;
+    overflow-y: auto;
   }
 
   .bga-modal-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 12px;
+  }
+
+  .bga-scheduling-card {
+    padding: 24px 16px;
   }
 }

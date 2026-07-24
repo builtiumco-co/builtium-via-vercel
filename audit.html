@@ -944,12 +944,12 @@
         </section>
 
         <!-- DIAGNOSTIC FINDING MODAL (FOR HEALTH CHECK CARDS) -->
-        <div class="bga-modal-backdrop" id="bga-diagnostic-modal" style="display: none;">
+        <div class="bga-modal-backdrop" id="bga-diagnostic-modal" style="display: none;" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="bga-modal-cat-name" aria-describedby="bga-modal-finding">
             <div class="bga-modal-card">
-                <button class="bga-modal-close" id="bga-modal-close-btn" aria-label="Close modal">&times;</button>
+                <button class="bga-modal-close" id="bga-modal-close-btn" aria-label="Close diagnostic modal">&times;</button>
                 <div class="bga-modal-header">
                     <div class="bga-modal-category">
-                        <span class="bga-modal-category__icon" id="bga-modal-icon"></span>
+                        <span class="bga-modal-category__icon" id="bga-modal-icon" aria-hidden="true"></span>
                         <h3 class="bga-modal-category__name" id="bga-modal-cat-name">Discoverability</h3>
                     </div>
                     <div class="bga-modal-score">

@@ -1565,13 +1565,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const glanceStrongestEl = document.getElementById('bga-glance-strongest');
         if (glanceStrongestEl) glanceStrongestEl.textContent = highestCategory.meta.displayName;
 
-        // Render Section 04: Digital Health Check (10 Cards Grid)
+        // Render Section 04: Digital Health Check (10 Cards Grid with Inline Expand/Collapse + Accessible Modal)
         const healthGridEl = document.getElementById('bga-health-grid');
         if (healthGridEl) {
             healthGridEl.innerHTML = '';
             
-            // Show sorted alphabetically or by categories order
-            categories.forEach(catKey => {
+            categories.forEach((catKey, catIdx) => {
                 const meta = catMetadata[catKey];
                 const scoreVal = scores[catKey] || 0;
                 const maxVal = categoryMaxPoints[catKey];
@@ -1591,12 +1590,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     priorityText = 'Priority: Medium';
                 }
 
+                const cardId = `bga-health-card-${catIdx}`;
+                const drawerId = `bga-drawer-${catIdx}`;
+
                 const card = document.createElement('div');
                 card.className = 'bga-health-card';
+                card.id = cardId;
                 card.innerHTML = `
                     <div class="bga-health-card__top">
                         <div class="bga-health-card__icon-wrap">
-                            <span class="bga-health-card__icon">${meta.icon}</span>
+                            <span class="bga-health-card__icon" aria-hidden="true">${meta.icon}</span>
                             <div>
                                 <h3 class="bga-health-card__name">${meta.displayName}</h3>
                                 <span class="bga-health-card__badge ${badgeClass}">${badgeText}</span>
@@ -1605,14 +1608,60 @@ document.addEventListener('DOMContentLoaded', () => {
                         <span class="bga-health-card__pct">${pct}%</span>
                     </div>
                     <p class="bga-health-card__desc">${meta.healthDesc}</p>
+                    
                     <div class="bga-health-card__bottom">
                         <span class="bga-health-card__priority">${priorityText}</span>
-                        <span class="bga-health-card__action">View details +</span>
+                        <div class="bga-health-card__action-wrap">
+                            <button class="bga-health-card__btn-toggle" aria-expanded="false" aria-controls="${drawerId}" id="btn-toggle-${catIdx}">
+                                Expand +
+                            </button>
+                            <button class="bga-health-card__action bga-btn-link" style="font-size:12px;" id="btn-modal-${catIdx}" aria-label="Open modal for ${meta.displayName}">
+                                Full Modal ↗
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Inline Expandable Drawer -->
+                    <div class="bga-health-card__drawer" id="${drawerId}" aria-hidden="true">
+                        <div class="bga-health-drawer-block">
+                            <span class="bga-health-drawer-block__lbl">DIAGNOSTIC FINDING</span>
+                            <p class="bga-health-drawer-block__val">${meta.diagnosticFinding}</p>
+                        </div>
+                        <div class="bga-health-drawer-block bga-health-drawer-block--impact">
+                            <span class="bga-health-drawer-block__lbl">BUSINESS IMPACT</span>
+                            <p class="bga-health-drawer-block__val">${meta.businessImpact}</p>
+                        </div>
+                        <div class="bga-health-drawer-block bga-health-drawer-block--fix">
+                            <span class="bga-health-drawer-block__lbl">RECOMMENDED FIX</span>
+                            <p class="bga-health-drawer-block__val">${meta.recommendedFix}</p>
+                        </div>
                     </div>
                 `;
 
-                // Add interactive click to open diagnostic modal
-                card.addEventListener('click', () => {
+                // Inline Expand/Collapse toggle listener
+                const toggleBtn = card.querySelector(`#btn-toggle-${catIdx}`);
+                const drawer = card.querySelector(`#${drawerId}`);
+                
+                toggleBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const isOpen = drawer.classList.contains('open');
+                    if (isOpen) {
+                        drawer.classList.remove('open');
+                        drawer.setAttribute('aria-hidden', 'true');
+                        toggleBtn.setAttribute('aria-expanded', 'false');
+                        toggleBtn.textContent = 'Expand +';
+                    } else {
+                        drawer.classList.add('open');
+                        drawer.setAttribute('aria-hidden', 'false');
+                        toggleBtn.setAttribute('aria-expanded', 'true');
+                        toggleBtn.textContent = 'Collapse -';
+                    }
+                });
+
+                // Modal pop-up listener
+                const modalBtn = card.querySelector(`#btn-modal-${catIdx}`);
+                modalBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
                     openDiagnosticModal({
                         name: meta.displayName,
                         icon: meta.icon,
@@ -1622,253 +1671,29 @@ document.addEventListener('DOMContentLoaded', () => {
                         finding: meta.diagnosticFinding,
                         impact: meta.businessImpact,
                         fix: meta.recommendedFix
-                    });
+                    }, modalBtn);
+                });
+
+                // Tapping card body toggles drawer
+                card.addEventListener('click', (e) => {
+                    if (e.target.closest('button')) return;
+                    toggleBtn.click();
                 });
 
                 healthGridEl.appendChild(card);
             });
         }
 
-        // Render Section 05: Top Growth Opportunities
-        const oppListEl = document.getElementById('bga-opp-list');
-        if (oppListEl) {
-            oppListEl.innerHTML = '';
-            top3Gaps.forEach((gap, idx) => {
-                const meta = gap.meta;
-                const optNum = `OPPORTUNITY 0${idx + 1}`;
-                
-                let tagText = 'CRITICAL';
-                if (idx === 1) tagText = 'HIGH';
-                else if (idx === 2) tagText = 'MEDIUM';
-
-                const oppCard = document.createElement('div');
-                oppCard.className = 'bga-card bga-opp-card';
-                oppCard.innerHTML = `
-                    <div class="bga-opp-card__header">
-                        <span class="bga-opp-card__tag">${optNum}</span>
-                        <span class="bga-badge-pill" style="font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700;">${tagText}</span>
-                    </div>
-                    <h3 class="bga-opp-card__title">${meta.displayName}</h3>
-                    <p class="bga-opp-card__desc">${meta.healthDesc}</p>
-                    
-                    <div class="bga-opp-card__grid">
-                        <div>
-                            <div class="bga-opp-card__col-label">CURRENT IMPACT</div>
-                            <div class="bga-opp-card__col-val">${meta.oppImpact}</div>
-                        </div>
-                        <div>
-                            <div class="bga-opp-card__col-label">POTENTIAL</div>
-                            <div class="bga-opp-card__col-val bga-opp-card__col-val--green">${meta.potentialOutcome}</div>
-                        </div>
-                    </div>
-
-                    <div>
-                        <div class="bga-opp-card__outcome-lbl">EXPECTED OUTCOME</div>
-                        <div class="bga-opp-card__outcome-val">${meta.expectedOutcome}</div>
-                    </div>
-                `;
-                oppListEl.appendChild(oppCard);
-            });
-        }
-
-        // Render Section 06: 30-Day Growth Roadmap
-        const roadmapWeeksEl = document.getElementById('bga-roadmap-weeks');
-        if (roadmapWeeksEl) {
-            roadmapWeeksEl.innerHTML = '';
-            
-            const weeksData = [
-                {
-                    week: 'WEEK 1',
-                    ratio: '01 / 04',
-                    title: 'Diagnose and set the baseline',
-                    bullets: [
-                        'Audit current surfaces against the report findings.',
-                        'Instrument tracking to know what changes.',
-                        'Draft the sharpened one-liner.'
-                    ],
-                    expectedOutcome: 'A written baseline and a clear scoreboard.',
-                    businessImpact: 'You stop guessing what\'s moving.'
-                },
-                {
-                    week: 'WEEK 2',
-                    ratio: '02 / 04',
-                    title: `Fix ${top3Gaps[0].meta.displayName.toLowerCase()}`,
-                    bullets: [
-                        'Ship the top-priority change end-to-end.',
-                        'Add proof directly next to the decision moment.',
-                        'Publish the updated one-liner across surfaces.'
-                    ],
-                    expectedOutcome: 'The biggest gap in the report is closed.',
-                    businessImpact: 'Conversion rate ticks up within the same traffic.'
-                },
-                {
-                    week: 'WEEK 3',
-                    ratio: '03 / 04',
-                    title: `Address ${top3Gaps[1].meta.displayName.toLowerCase()}`,
-                    bullets: [
-                        'Build the lead-capture asset and route.',
-                        'Wire the follow-up to a simple sequence.',
-                        'Add the missing trust signals to the footer.'
-                    ],
-                    expectedOutcome: 'Interested visitors stop leaving as strangers.',
-                    businessImpact: 'You start compounding attention instead of renting it.'
-                },
-                {
-                    week: 'WEEK 4',
-                    ratio: '04 / 04',
-                    title: 'Review, measure, and lock in',
-                    bullets: [
-                        'Compare against the Week 1 baseline.',
-                        'Kill anything that didn\'t move the number.',
-                        'Set the weekly cadence you\'ll keep after this sprint.'
-                    ],
-                    expectedOutcome: 'A working system you can hand off or scale.',
-                    businessImpact: 'Growth stops depending on any single push.'
-                }
-            ];
-
-            weeksData.forEach(w => {
-                const card = document.createElement('div');
-                card.className = 'bga-card bga-roadmap-card';
-                card.innerHTML = `
-                    <div class="bga-roadmap-card__top">
-                        <span class="bga-roadmap-card__week">${w.week}</span>
-                        <span class="bga-roadmap-card__ratio">${w.ratio}</span>
-                    </div>
-                    <h3 class="bga-roadmap-card__title">${w.title}</h3>
-                    <ul class="bga-roadmap-card__bullets">
-                        ${w.bullets.map(b => `<li class="bga-roadmap-card__bullet-item">${b}</li>`).join('')}
-                    </ul>
-                    <div class="bga-roadmap-card__inset">
-                        <div class="bga-roadmap-card__inset-group">
-                            <span class="bga-roadmap-card__inset-lbl">EXPECTED OUTCOME</span>
-                            <span class="bga-roadmap-card__inset-val">${w.expectedOutcome}</span>
-                        </div>
-                        <div class="bga-roadmap-card__inset-group">
-                            <span class="bga-roadmap-card__inset-lbl">BUSINESS IMPACT</span>
-                            <span class="bga-roadmap-card__inset-val">${w.businessImpact}</span>
-                        </div>
-                    </div>
-                `;
-                roadmapWeeksEl.appendChild(card);
-            });
-        }
-
-        // Render Section 08: Industry Benchmark Rows
-        const bmRowsEl = document.getElementById('bga-bm-rows');
-        if (bmRowsEl) {
-            bmRowsEl.innerHTML = '';
-            
-            const benchmarkMap = [
-                { cat: 'DISCOVERABILITY', label: 'Discoverability', avg: 52, top: 78 },
-                { cat: 'WEBSITE', label: 'Website Experience', avg: 61, top: 88 },
-                { cat: 'POSITIONING', label: 'Positioning', avg: 55, top: 84 },
-                { cat: 'SOCIAL_PROOF', label: 'Social Proof', avg: 48, top: 82 },
-                { cat: 'LEAD_CAPTURE', label: 'Lead Generation', avg: 46, top: 79 },
-                { cat: 'RETENTION', label: 'Retention', avg: 40, top: 76 }
-            ];
-
-            benchmarkMap.forEach(bm => {
-                const youPct = Math.round(((scores[bm.cat] || 0) / categoryMaxPoints[bm.cat]) * 100);
-                const row = document.createElement('div');
-                row.className = 'bga-bm-row';
-                row.innerHTML = `
-                    <span class="bga-bm-row__name">${bm.label}</span>
-                    <span class="bga-bm-row__val bga-bm-row__val--you">you ${youPct}</span>
-                    <span class="bga-bm-row__val">avg ${bm.avg}</span>
-                    <span class="bga-bm-row__val">top ${bm.top}</span>
-                `;
-                bmRowsEl.appendChild(row);
-            });
-        }
-
-        // Section 11 Blueprint Pill stage update
-        const bpStagePill = document.getElementById('bga-blueprint-stage-pill');
-        if (bpStagePill) {
-            bpStagePill.textContent = `Built for businesses at the ${activeStage.name} stage`;
-        }
-
-        const bpFocusBox = document.getElementById('bga-blueprint-focus-box');
-        if (bpFocusBox) {
-            bpFocusBox.innerHTML = `Based on your report, the blueprint prioritizes: <strong>${top3Gaps[0].meta.displayName} · ${top3Gaps[1].meta.displayName}</strong>`;
-        }
-
-        // Smooth Scroll Continue Button (Transition Section 10)
-        const continueBtn = document.getElementById('bga-transition-continue-btn');
-        if (continueBtn) {
-            continueBtn.addEventListener('click', () => {
-                const upsellSec = document.getElementById('sec-upsell-blueprint');
-                if (upsellSec) {
-                    upsellSec.scrollIntoView({ behavior: 'smooth' });
-                }
-            });
-        }
-
-        // Setup Paystack Popup Triggers across all unlock buttons
-        const unlockButtons = document.querySelectorAll('.bga-btn-unlock-trigger, #bga-main-cta-btn, #bga-final-cta-btn, #bga-top-unlock-link');
-        unlockButtons.forEach(btn => {
-            btn.replaceWith(btn.cloneNode(true));
-        });
-
-        const refreshedButtons = document.querySelectorAll('.bga-btn-unlock-trigger, #bga-main-cta-btn, #bga-final-cta-btn, #bga-top-unlock-link');
-        refreshedButtons.forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.preventDefault();
-                
-                if (!paystackPublicKey) {
-                    alert("Paystack payment system is currently initializing. Please try again in a few seconds.");
-                    return;
-                }
-
-                const originalText = btn.textContent;
-                btn.textContent = "Opening Checkout...";
-                btn.disabled = true;
-
-                const userEmail = userData.email && userData.email.trim() !== '' ? userData.email.trim() : 'customer@builtiumco.com';
-
-                const handler = PaystackPop.setup({
-                    key: paystackPublicKey,
-                    email: userEmail,
-                    amount: 5000 * 100, // ₦5,000 in kobo
-                    currency: 'NGN',
-                    ref: 'builtium_' + Math.floor((Math.random() * 1000000000) + 1),
-                    callback: function(response) {
-                        btn.textContent = "Payment Confirmed!";
-                        btn.disabled = false;
-                        
-                        // Submit payment details to Netlify hidden form
-                        submitPaymentToNetlify(response.reference, 'success');
-                        
-                        // Save paid status & apply UI unlocks
-                        localStorage.setItem('bga_paid', 'true');
-                        submitHiddenForm(true);
-                        
-                        // Show thank you screen / confirmation
-                        showPaymentThankYou();
-
-                        const scheduleCard = document.getElementById('bga-scheduling-card');
-                        if (scheduleCard) {
-                            scheduleCard.style.display = 'block';
-                            scheduleCard.scrollIntoView({ behavior: 'smooth' });
-                        }
-                    },
-                    onClose: function() {
-                        btn.textContent = originalText;
-                        btn.disabled = false;
-                        console.log('Payment window closed.');
-                    }
-                });
-                handler.openIframe();
-            });
-        });
-
-        // Diagnostic Modal Handlers
+        // Diagnostic Modal Handlers (Accessible Dialog with Focus Lock and ESC key)
         const diagModal = document.getElementById('bga-diagnostic-modal');
         const modalCloseBtn = document.getElementById('bga-modal-close-btn');
+        let lastFocusedElement = null;
 
-        function openDiagnosticModal(data) {
+        function openDiagnosticModal(data, triggerEl = null) {
             if (!diagModal) return;
             
+            lastFocusedElement = triggerEl || document.activeElement;
+
             document.getElementById('bga-modal-icon').innerHTML = data.icon;
             document.getElementById('bga-modal-cat-name').textContent = data.name;
             document.getElementById('bga-modal-pct').textContent = `${data.percentage}%`;
@@ -1882,21 +1707,55 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('bga-modal-fix').textContent = data.fix;
 
             diagModal.style.display = 'flex';
+            diagModal.setAttribute('aria-hidden', 'false');
+            document.body.style.overflow = 'hidden';
+
+            if (modalCloseBtn) modalCloseBtn.focus();
+        }
+
+        function closeDiagnosticModal() {
+            if (!diagModal) return;
+            diagModal.style.display = 'none';
+            diagModal.setAttribute('aria-hidden', 'true');
+            document.body.style.overflow = '';
+            if (lastFocusedElement && typeof lastFocusedElement.focus === 'function') {
+                lastFocusedElement.focus();
+            }
         }
 
         if (modalCloseBtn) {
-            modalCloseBtn.addEventListener('click', () => {
-                if (diagModal) diagModal.style.display = 'none';
-            });
+            modalCloseBtn.addEventListener('click', closeDiagnosticModal);
         }
 
         if (diagModal) {
             diagModal.addEventListener('click', (e) => {
                 if (e.target === diagModal) {
-                    diagModal.style.display = 'none';
+                    closeDiagnosticModal();
                 }
             });
         }
+
+        // Global Keyboard Listener for ESC and Modal Focus Trap
+        document.addEventListener('keydown', (e) => {
+            if (diagModal && diagModal.getAttribute('aria-hidden') === 'false') {
+                if (e.key === 'Escape') {
+                    closeDiagnosticModal();
+                } else if (e.key === 'Tab') {
+                    const focusables = diagModal.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([-tabindex="-1"])');
+                    if (focusables.length > 0) {
+                        const first = focusables[0];
+                        const last = focusables[focusables.length - 1];
+                        if (e.shiftKey && document.activeElement === first) {
+                            last.focus();
+                            e.preventDefault();
+                        } else if (!e.shiftKey && document.activeElement === last) {
+                            first.focus();
+                            e.preventDefault();
+                        }
+                    }
+                }
+            }
+        });
 
         // Setup Manual Call Scheduling Handoff Form
         const confirmPhoneInput = document.getElementById('bga-confirm-phone');
