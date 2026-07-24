@@ -1303,114 +1303,64 @@ document.addEventListener('DOMContentLoaded', () => {
         const maxScoreTotal = 1375;
         const totalPercentage = Math.min(Math.round((rawTotal / maxScoreTotal) * 100), 100);
 
-        // Category "why it matters" explanations (used in gaps section)
-        const categoryWhyMatters = {
-            PROFILE: "A clear profile defines who you are and who you serve.",
-            DISCOVERABILITY: "If customers can't find you, they can't buy from you.",
-            WEBSITE: "Your website is your 24/7 digital storefront.",
-            POSITIONING: "Positioning tells buyers why they should choose you over anyone else.",
-            SOCIAL_PROOF: "Strangers need someone else's voice to trust yours.",
-            SOCIAL_MEDIA: "Social media shows that your business is active and alive.",
-            LEAD_CAPTURE: "Warm attention with no exit ramp is wasted attention.",
-            RETENTION: "Acquisition without retention is a leaky bucket.",
-            LEGAL: "Security and compliance establish institutional trust.",
-            COMPETITIVE: "Understanding the landscape lets you win the comparison game."
-        };
+        // Report Meta Details
+        const reportId = 'BLT-' + Math.floor(100000 + Math.random() * 900000);
+        const formattedDate = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 
-        // Maturity Stages — 5-stage model per spec section 3
+        const reportIdEl = document.getElementById('bga-report-id');
+        if (reportIdEl) reportIdEl.textContent = reportId;
+
+        const metaBizEl = document.getElementById('bga-meta-biz');
+        if (metaBizEl) metaBizEl.textContent = userData.businessName || 'Your Business';
+
+        const metaIndEl = document.getElementById('bga-meta-ind');
+        if (metaIndEl) metaIndEl.textContent = userData.industry || 'Professional Services';
+
+        const metaLocEl = document.getElementById('bga-meta-loc');
+        if (metaLocEl) metaLocEl.textContent = userData.location || 'Lagos, NG';
+
+        const metaDateEl = document.getElementById('bga-meta-date');
+        if (metaDateEl) metaDateEl.textContent = formattedDate;
+
+        // Maturity Stages — 5-stage model per spec
         const stagesInfo = [
             {
                 name: "Invisible",
-                subtext: "Barely discoverable online.",
-                rank: "01 / 05",
-                bullets: [
-                    "You are not visible in local search",
-                    "You have no central website storefront",
-                    "You rely entirely on manual offline efforts"
-                ],
-                nextStage: "Present",
-                nextSubtext: "You exist online, but passively.",
-                nextBullets: [
-                    "Basic website and listings set up",
-                    "Found by name, if not by service",
-                    "Clear baseline profiles created"
-                ],
-                patternQuote: "Businesses at this stage are digitally locked out of the market — prospects cannot confirm they exist."
+                exp: "You have virtually no digital footprint. Prospects cannot find you when searching for your services online.",
+                doingWell: "You have taken the first step by auditing your business setup.",
+                preventsNext: "Missing website storefront, absent local search listings, and zero digital touchpoints.",
+                goodNews: "Any digital step taken now yields immediate, noticeable visibility gains."
             },
             {
                 name: "Present",
-                subtext: "You exist online, but passively.",
-                rank: "02 / 05",
-                bullets: [
-                    "You are found by name, not by service",
-                    "Your website is basic or outdated",
-                    "Your profiles lack active postings"
-                ],
-                nextStage: "Credible",
-                nextSubtext: "You look legitimate, and convert occasionally.",
-                nextBullets: [
-                    "Consistent professional design language",
-                    "Clear value proposition and positioning",
-                    "Active reviews and social proof visible"
-                ],
-                patternQuote: "Present but silent. Traffic arrives but leaves immediately because the credibility bar isn't met."
+                exp: "You exist online, but passively. You are found by exact name, but rarely when customers search for generic service keywords.",
+                doingWell: "Basic profile setup and contact routes are established.",
+                preventsNext: "Outdated web design, silent social channels, and lack of customer review strategy.",
+                goodNews: "A modern visual overhaul and active reviews will rapidly move you to Credible."
             },
             {
                 name: "Credible",
-                subtext: "You look legitimate, and convert occasionally.",
-                rank: "03 / 05",
-                bullets: [
-                    "You look professional at a glance",
-                    "You convert when someone is already sold",
-                    "You depend on referrals and word of mouth"
-                ],
-                nextStage: "Growing",
-                nextSubtext: "Systems are in place, traction is consistent.",
-                nextBullets: [
-                    "A structured content and channel rhythm",
-                    "Lead capture and follow-up wired together",
-                    "Traffic that returns, not just arrives"
-                ],
-                patternQuote: "Businesses at this stage look credible but almost none have set up retention — most traffic never returns."
+                exp: "You get referrals and inbound interest, but conversion is inconsistent. The strong months feel earned, and the flat months feel unexplained.",
+                doingWell: "You have a real presence, a professional surface, and enough proof to be taken seriously in a first meeting.",
+                preventsNext: "Your systems for discovery, capture, and retention are not yet doing work between conversations. Growth still depends on you being in the room.",
+                goodNews: "You're one focused sprint away from the next stage. The gaps are specific, sequenced, and fixable — no rebuild required."
             },
             {
                 name: "Growing",
-                subtext: "Systems are in place, traction is consistent.",
-                rank: "04 / 05",
-                bullets: [
-                    "Your content has rhythmic channels",
-                    "You capture lead information systematically",
-                    "Some traffic returns automatically"
-                ],
-                nextStage: "Compounding",
-                nextSubtext: "You have a retention and referral engine working for you.",
-                nextBullets: [
-                    "Full loop automation across channels",
-                    "Strong brand referrals and authority",
-                    "Multi-channel retention and loyalty"
-                ],
-                patternQuote: "Traction is active, but friction in lead capture or checkout leaks up to 30% of potential conversions."
+                exp: "Consistent traction from your channels. New conversations start without you being in the room, but retention leaks revenue.",
+                doingWell: "High conversion rate on inbound visitors and structured lead capture processes.",
+                preventsNext: "Post-sale follow-up loops and customer repeat purchase retention programs are incomplete.",
+                goodNews: "Optimizing retention will multiply your return on existing traffic immediately."
             },
             {
                 name: "Compounding",
-                subtext: "You have a retention and referral engine working for you.",
-                rank: "05 / 05",
-                bullets: [
-                    "You dominate local discoverability",
-                    "Your web conversions are automated",
-                    "You retain and grow customer lifetime value"
-                ],
-                nextStage: "Elite",
-                nextSubtext: "Ongoing growth supremacy.",
-                nextBullets: [
-                    "Continuous CRO tests running monthly",
-                    "Active category expansion strategies"
-                ],
-                patternQuote: "Market leader status is achieved, but stay disciplined — competitor updates happen fast."
+                exp: "Your business dominates local discoverability, web conversion is automated, and repeat customers generate exponential momentum.",
+                doingWell: "Multi-channel presence, automated lead follow-ups, and robust social proof engines.",
+                preventsNext: "Sustaining market leader dominance requires continuous monthly CRO and competitor tracking.",
+                goodNews: "Your foundation is elite — scaling ad budget and strategic partnerships will unlock massive growth."
             }
         ];
 
-        // Section 3 stage threshold — spec: 0-20 Invisible, 21-40 Present, 41-60 Credible, 61-80 Growing, 81-100 Compounding
         let activeStageIndex;
         if (totalPercentage <= 20) activeStageIndex = 0;
         else if (totalPercentage <= 40) activeStageIndex = 1;
@@ -1420,281 +1370,447 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const activeStage = stagesInfo[activeStageIndex];
 
-        // Section 9: Calculate Estimated Potential Score
-        const potentialScore = Math.min(Math.round(totalPercentage + (100 - totalPercentage) * 0.6), 92);
+        // Overall Score Display
+        const scoreNumEl = document.getElementById('bga-score-num');
+        if (scoreNumEl) scoreNumEl.textContent = totalPercentage;
 
-        // Section 3: Render Stage Header — stage name large, subtext below, score as secondary detail
-        document.getElementById('bga-stage-rank').textContent = activeStage.rank;
-        document.getElementById('bga-stage-title').textContent = activeStage.name + ".";
-        const stageSubtextEl = document.getElementById('bga-stage-subtext');
-        if (stageSubtextEl) stageSubtextEl.textContent = activeStage.subtext;
-        const stageScoreEl = document.getElementById('bga-stage-score-label');
-        if (stageScoreEl) stageScoreEl.textContent = `${totalPercentage}% Growth Score`;
-        document.getElementById('bga-composite-score').textContent = totalPercentage;
+        const stageNameEl = document.getElementById('bga-stage-name');
+        if (stageNameEl) stageNameEl.textContent = activeStage.name;
 
-        // Render Growth Ladder Horizontal Blocks
-        const ladderGrid = document.getElementById('bga-ladder-grid');
-        if (ladderGrid) {
-            ladderGrid.innerHTML = '';
-            stagesInfo.forEach((st, idx) => {
-                const isActive = idx === activeStageIndex;
-                const isPassed = idx < activeStageIndex;
-                const item = document.createElement('div');
-                item.style.padding = '14px 10px';
-                item.style.borderTop = isActive ? '4px solid #3a7bff' : (isPassed ? '4px solid #0f172a' : '4px solid #e2e8f0');
-                item.style.color = isActive ? '#3a7bff' : (isPassed ? '#0f172a' : '#94a3b8');
-                item.style.fontWeight = isActive ? '700' : '500';
-                item.style.fontFamily = "'Space Grotesk', sans-serif";
-                item.style.textAlign = 'left';
-                item.innerHTML = `
-                    <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; margin-bottom: 4px;">0${idx+1}</div>
-                    <div style="font-size: 13px; text-transform: capitalize;">${st.name}</div>
-                `;
-                ladderGrid.appendChild(item);
-            });
-        }
+        // Stage Stepper active state
+        const stageStepperItems = document.querySelectorAll('.bga-stage-stepper__item');
+        stageStepperItems.forEach((item, idx) => {
+            if (idx === activeStageIndex) {
+                item.classList.add('active');
+            } else {
+                item.classList.remove('active');
+            }
+        });
 
-        // Identify sorted categories (lowest → highest) for all 10
+        // Stage Stepper Circles (Section 03)
+        const circleNodes = document.querySelectorAll('.bga-circles-stepper__node');
+        circleNodes.forEach((node, idx) => {
+            if (idx === activeStageIndex) {
+                node.classList.add('bga-circles-stepper__node--active');
+            } else {
+                node.classList.remove('bga-circles-stepper__node--active');
+            }
+        });
+
+        // Diagnostic copy blocks
+        const diagExpEl = document.getElementById('bga-diag-exp');
+        if (diagExpEl) diagExpEl.textContent = activeStage.exp;
+
+        const diagWellEl = document.getElementById('bga-diag-well');
+        if (diagWellEl) diagWellEl.textContent = activeStage.doingWell;
+
+        const diagPreventsEl = document.getElementById('bga-diag-prevents');
+        if (diagPreventsEl) diagPreventsEl.textContent = activeStage.preventsNext;
+
+        const diagGoodNewsEl = document.getElementById('bga-diag-goodnews');
+        if (diagGoodNewsEl) diagGoodNewsEl.textContent = activeStage.goodNews;
+
+        // Section 03 Journey Cards
+        const journeyHereTitle = document.getElementById('bga-journey-here-title');
+        if (journeyHereTitle) journeyHereTitle.textContent = activeStage.name;
+
+        const journeyHereDesc = document.getElementById('bga-journey-here-desc');
+        if (journeyHereDesc) journeyHereDesc.textContent = activeStage.exp;
+
+        const nextStageObj = stagesInfo[Math.min(activeStageIndex + 1, stagesInfo.length - 1)];
+        const journeyNextTitle = document.getElementById('bga-journey-next-title');
+        if (journeyNextTitle) journeyNextTitle.textContent = nextStageObj.name;
+
+        const journeyNextDesc = document.getElementById('bga-journey-next-desc');
+        if (journeyNextDesc) journeyNextDesc.textContent = nextStageObj.exp;
+
+        // Compute Category Percentages & Sort
+        const catMetadata = {
+            PROFILE: {
+                displayName: 'Profile',
+                icon: categoryIcons.PROFILE,
+                healthDesc: 'First-time visitors decide legitimacy in under seven seconds.',
+                diagnosticFinding: 'Visual consistency and corporate identity build immediate confidence upon first load.',
+                businessImpact: 'Inconsistent branding causes potential buyers to question legitimacy.',
+                recommendedFix: 'Standardize your brand guidelines, high-res assets, and copy across all public touchpoints.',
+                potentialOutcome: '+20% trust signal within 30 days',
+                oppImpact: 'Your core business details and identity are not landing clearly everywhere.',
+                expectedOutcome: 'Standardize logo, contact details, and brand message across all channels.'
+            },
+            DISCOVERABILITY: {
+                displayName: 'Discoverability',
+                icon: categoryIcons.DISCOVERABILITY,
+                healthDesc: 'Search intent is the cheapest, highest-fit demand you can capture.',
+                diagnosticFinding: 'Search intent is the cheapest, highest-fit demand you can capture.',
+                businessImpact: 'High-intent prospects looking for your services cannot find your business in local search results or Google Maps, directing revenue to competitors.',
+                recommendedFix: 'Claim and fully optimize your Google Business Profile, align NAP consistency across directories, and establish a weekly review collection cadence.',
+                potentialOutcome: '+40% search visibility within 30 days',
+                oppImpact: 'People are searching for your services locally, but finding competitors instead.',
+                expectedOutcome: 'Optimize Google Business Profile and local directory citations.'
+            },
+            WEBSITE: {
+                displayName: 'Website',
+                icon: categoryIcons.WEBSITE,
+                healthDesc: 'Your homepage is the single most-visited page in the business.',
+                diagnosticFinding: 'Your homepage structure and performance govern visitor conversion rates.',
+                businessImpact: 'Slow load times or cluttered layouts lead to high drop-off rates before visitors see your main call to action.',
+                recommendedFix: 'Optimize page load speed under 3 seconds, streamline navigation, and place high-contrast CTAs above the fold.',
+                potentialOutcome: '+30% conversion signal within 30 days',
+                oppImpact: 'Visitors leave your site before understanding your offer or taking action.',
+                expectedOutcome: 'Redesign homepage hero with high-contrast CTAs and under-3-second load speed.'
+            },
+            POSITIONING: {
+                displayName: 'Positioning',
+                icon: categoryIcons.POSITIONING,
+                healthDesc: 'Positioning is the compounding layer under every other channel.',
+                diagnosticFinding: 'Clear value positioning differentiates your offer from standard alternatives.',
+                businessImpact: 'Unclear messaging forces prospects to evaluate your business on price rather than value.',
+                recommendedFix: 'Sharpen your single-sentence unique value proposition and articulate client-outcome package tiers.',
+                potentialOutcome: '+25% pricing clarity within 30 days',
+                oppImpact: 'Prospects treat your services as a commodity and compete on price.',
+                expectedOutcome: 'Publish a single-sentence outcome-focused value proposition.'
+            },
+            SOCIAL_PROOF: {
+                displayName: 'Social Proof',
+                icon: categoryIcons.SOCIAL_PROOF,
+                healthDesc: 'Strangers copy the behavior of people who look like them.',
+                diagnosticFinding: 'Verified testimonials and review widgets eliminate buying skepticism.',
+                businessImpact: 'Lack of visible trust markers causes interested buyers to delay or abandon their decision.',
+                recommendedFix: 'Embed live review widgets, collect 3 named customer testimonials with photos, and showcase client logos.',
+                potentialOutcome: '+28% signal within 30 days',
+                oppImpact: 'Serious buyers stall at the decision moment because proof isn\'t visible.',
+                expectedOutcome: 'Collect three named testimonials and place them above the fold.'
+            },
+            SOCIAL_MEDIA: {
+                displayName: 'Social Media',
+                icon: categoryIcons.SOCIAL_MEDIA,
+                healthDesc: 'Dormant channels signal the business itself is dormant.',
+                diagnosticFinding: 'Regular posting rhythms maintain brand relevance and authority.',
+                businessImpact: 'Infrequent activity creates the impression of an inactive or unmonitored operation.',
+                recommendedFix: 'Establish a 3x/week content publishing calendar combining educational insights with clear conversion offers.',
+                potentialOutcome: '+22% brand activity signal within 30 days',
+                oppImpact: 'Quiet channels send mixed signals to prospects conducting due diligence.',
+                expectedOutcome: 'Maintain a 3x/week cadence of value-driven social posts.'
+            },
+            LEAD_CAPTURE: {
+                displayName: 'Lead Capture',
+                icon: categoryIcons.LEAD_CAPTURE,
+                healthDesc: 'Most visitors are not ready to buy — they are ready to remember.',
+                diagnosticFinding: 'High-value lead magnets convert passive traffic into reachable prospects.',
+                businessImpact: 'Without captured contacts, 95% of interested visitors leave without any follow-up route.',
+                recommendedFix: 'Deploy a targeted lead magnet (e.g. guide or audit) backed by a 2-field form and automated email sequence.',
+                potentialOutcome: '+25% signal within 30 days',
+                oppImpact: 'You re-pay for the same attention every month without capturing leads.',
+                expectedOutcome: 'Add one specific lead magnet behind a simple two-field form.'
+            },
+            RETENTION: {
+                displayName: 'Retention',
+                icon: categoryIcons.RETENTION,
+                healthDesc: 'Revenue is a function of return, not just acquisition.',
+                diagnosticFinding: 'Post-sale engagement loops multiply customer lifetime value and referrals.',
+                businessImpact: 'Acquisition costs repeat constantly when existing clients drop off after one transaction.',
+                recommendedFix: 'Implement a 30-day post-sale survey check-in and launch a monthly client newsletter update.',
+                potentialOutcome: '+35% signal within 30 days',
+                oppImpact: 'You grow only as fast as you can buy new attention.',
+                expectedOutcome: 'Start a monthly note to past visitors and current customers.'
+            },
+            LEGAL: {
+                displayName: 'Legal',
+                icon: categoryIcons.LEGAL,
+                healthDesc: 'Enterprise and cautious buyers audit these before contacting.',
+                diagnosticFinding: 'Visible privacy policies and SSL badges resolve compliance concerns.',
+                businessImpact: 'Cautious or institutional clients withhold high-value contracts without trust signals.',
+                recommendedFix: 'Publish clear Privacy Policy and Terms of Service links in your website footer and enforce HTTPS/SSL everywhere.',
+                potentialOutcome: '+18% compliance trust within 30 days',
+                oppImpact: 'Enterprise buyers stall when essential legal trust signals are absent.',
+                expectedOutcome: 'Add HTTPS SSL, Privacy Policy, and Terms links to footer.'
+            },
+            COMPETITIVE: {
+                displayName: 'Competitive',
+                icon: categoryIcons.COMPETITIVE,
+                healthDesc: 'Buyers pick the option that feels most specific to them.',
+                diagnosticFinding: 'Competitor intelligence allows you to claim clear market differentiation.',
+                businessImpact: 'Failing to highlight unique strengths makes your offer appear identical to generic options.',
+                recommendedFix: 'Conduct a monthly audit of competitor pricing and positioning to highlight your distinct edge.',
+                potentialOutcome: '+24% differentiation signal within 30 days',
+                oppImpact: 'Deals are lost because prospects don\'t understand why to pick you.',
+                expectedOutcome: 'Document top competitor gaps and publish your specific advantages.'
+            }
+        };
+
         const sortedCats = categories.map(cat => {
             const scoreVal = scores[cat] || 0;
             const maxVal = categoryMaxPoints[cat];
+            const pct = Math.round((scoreVal / maxVal) * 100);
             return {
                 name: cat,
-                displayName: categoryDisplayNames[cat] || cat,
-                percentage: Math.round((scoreVal / maxVal) * 100)
+                meta: catMetadata[cat],
+                percentage: pct
             };
         }).sort((a, b) => a.percentage - b.percentage);
 
         const top3Gaps = sortedCats.slice(0, 3);
-        const top3Strengths = [...sortedCats].sort((a, b) => b.percentage - a.percentage).slice(0, 3);
+        const highestCategory = [...sortedCats].sort((a, b) => b.percentage - a.percentage)[0];
 
-        // Section 4: Synthesized diagnostic sentence from bottom-3 category display names
-        const diagSentence = `Your ${top3Gaps[0].displayName}, ${top3Gaps[1].displayName}, and ${top3Gaps[2].displayName} are the areas holding your growth back most right now.`;
-        document.getElementById('bga-stage-desc').textContent = diagSentence;
+        // At a Glance Box Update
+        const glanceHealthEl = document.getElementById('bga-glance-health');
+        if (glanceHealthEl) glanceHealthEl.textContent = activeStage.name;
 
-        // Render SECTION 01: All 10 Category scores with animated bars + per-category lines
-        const breakdownListEl = document.getElementById('bga-breakdown-list');
-        if (breakdownListEl) {
-            breakdownListEl.innerHTML = '';
-            sortedCats.slice().sort((a, b) => b.percentage - a.percentage).forEach((cat, i) => {
-                const isGap = top3Gaps.some(g => g.name === cat.name);
-                const line = isGap ? (categoryGapLines[cat.name] || '') : (categoryStrengthLines[cat.name] || '');
-                const barColor = isGap ? '#ef4444' : '#3a7bff';
+        const glanceOppEl = document.getElementById('bga-glance-opportunity');
+        if (glanceOppEl) glanceOppEl.textContent = top3Gaps[0].meta.displayName;
 
-                const row = document.createElement('div');
-                row.style.padding = '18px 0';
-                row.style.borderBottom = '1px solid #f1f5f9';
-                row.innerHTML = `
-                    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;">
-                        <span style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:15px;color:#0f172a;">${cat.displayName}</span>
-                        <span style="font-family:'JetBrains Mono',monospace;font-weight:700;font-size:13px;color:${barColor};">${cat.percentage}%</span>
+        const glanceUrgentEl = document.getElementById('bga-glance-urgent');
+        if (glanceUrgentEl) glanceUrgentEl.textContent = top3Gaps[1].meta.displayName;
+
+        const glanceStrongestEl = document.getElementById('bga-glance-strongest');
+        if (glanceStrongestEl) glanceStrongestEl.textContent = highestCategory.meta.displayName;
+
+        // Render Section 04: Digital Health Check (10 Cards Grid)
+        const healthGridEl = document.getElementById('bga-health-grid');
+        if (healthGridEl) {
+            healthGridEl.innerHTML = '';
+            
+            // Show sorted alphabetically or by categories order
+            categories.forEach(catKey => {
+                const meta = catMetadata[catKey];
+                const scoreVal = scores[catKey] || 0;
+                const maxVal = categoryMaxPoints[catKey];
+                const pct = Math.round((scoreVal / maxVal) * 100);
+
+                let badgeText = 'Critical';
+                let badgeClass = 'bga-badge--critical';
+                let priorityText = 'Priority: High';
+
+                if (pct >= 70) {
+                    badgeText = 'Excellent';
+                    badgeClass = 'bga-badge--excellent';
+                    priorityText = 'Priority: Low';
+                } else if (pct >= 45) {
+                    badgeText = 'Needs Attention';
+                    badgeClass = 'bga-badge--attention';
+                    priorityText = 'Priority: Medium';
+                }
+
+                const card = document.createElement('div');
+                card.className = 'bga-health-card';
+                card.innerHTML = `
+                    <div class="bga-health-card__top">
+                        <div class="bga-health-card__icon-wrap">
+                            <span class="bga-health-card__icon">${meta.icon}</span>
+                            <div>
+                                <h3 class="bga-health-card__name">${meta.displayName}</h3>
+                                <span class="bga-health-card__badge ${badgeClass}">${badgeText}</span>
+                            </div>
+                        </div>
+                        <span class="bga-health-card__pct">${pct}%</span>
                     </div>
-                    <div style="height:4px;background:#f1f5f9;border-radius:2px;overflow:hidden;margin-bottom:8px;">
-                        <div class="bga-result-bar-fill" data-target="${cat.percentage}" style="height:100%;width:0%;background:${barColor};border-radius:2px;transition:width 1.2s cubic-bezier(0.4,0,0.2,1);transition-delay:${i * 0.07}s;"></div>
+                    <p class="bga-health-card__desc">${meta.healthDesc}</p>
+                    <div class="bga-health-card__bottom">
+                        <span class="bga-health-card__priority">${priorityText}</span>
+                        <span class="bga-health-card__action">View details +</span>
                     </div>
-                    <p style="font-size:12px;color:#94a3b8;margin:0;line-height:1.4;">${line}</p>
                 `;
-                breakdownListEl.appendChild(row);
-            });
 
-            // Animate bars when the breakdown section scrolls into view
-            const barObserver = new IntersectionObserver((entries, obs) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.querySelectorAll('.bga-result-bar-fill').forEach(fill => {
-                            const target = fill.getAttribute('data-target');
-                            setTimeout(() => { fill.style.width = target + '%'; }, 80);
-                        });
-                        obs.unobserve(entry.target);
-                    }
+                // Add interactive click to open diagnostic modal
+                card.addEventListener('click', () => {
+                    openDiagnosticModal({
+                        name: meta.displayName,
+                        icon: meta.icon,
+                        percentage: pct,
+                        badgeText: badgeText,
+                        badgeClass: badgeClass,
+                        finding: meta.diagnosticFinding,
+                        impact: meta.businessImpact,
+                        fix: meta.recommendedFix
+                    });
                 });
-            }, { threshold: 0.1 });
-            barObserver.observe(breakdownListEl);
-        }
 
-        // Render SECTION 02: 3 Leverage Gaps (section 6 per-category lines)
-        const gapsListEl = document.getElementById('bga-gaps-list');
-        if (gapsListEl) {
-            gapsListEl.innerHTML = '';
-            top3Gaps.forEach((gap, idx) => {
-                const gapLine = categoryGapLines[gap.name] || '';
-                const whyText = categoryWhyMatters[gap.name] || '';
-                const bullets = categoryFixBullets[gap.name] || [];
-                const icon = categoryIcons[gap.name] || '';
-
-                const gapItem = document.createElement('div');
-                gapItem.style.borderBottom = '1px solid #e2e8f0';
-                gapItem.style.paddingBottom = '40px';
-                gapItem.innerHTML = `
-                    <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
-                        <span style="font-family:'JetBrains Mono',monospace;font-size:13px;color:#3a7bff;font-weight:700;">0${idx+1}</span>
-                        <span style="color:#3a7bff;">${icon}</span>
-                        <span style="font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:700;color:#000;">${gap.displayName}</span>
-                        <span style="font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:#ef4444;margin-left:auto;">${gap.percentage}%</span>
-                    </div>
-                    <p style="font-size:15px;color:#334155;font-weight:500;line-height:1.6;margin:0 0 12px 0;">
-                        ${gapLine}
-                    </p>
-                    <p style="font-size:13px;color:#64748b;line-height:1.5;margin:0 0 16px 0;">
-                        Why it matters &mdash; ${whyText}
-                    </p>
-                    ${bullets.length ? `
-                    <div style="margin-top:12px;">
-                        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.2em;color:#94a3b8;text-transform:uppercase;margin-bottom:10px;">WHAT CHANGES IF YOU FIX THIS</div>
-                        <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px;">
-                            ${bullets.map(b => `
-                            <li style="display:flex;gap:10px;align-items:baseline;font-size:14px;color:#475569;font-weight:500;">
-                                <span style="color:#3a7bff;flex-shrink:0;">&#43;</span>
-                                <span>${b}</span>
-                            </li>`).join('')}
-                        </ul>
-                    </div>` : ''}
-                `;
-                gapsListEl.appendChild(gapItem);
+                healthGridEl.appendChild(card);
             });
         }
 
-        // Render SECTION 03: Sequenced Roadmap
-        const roadmapListEl = document.getElementById('bga-roadmap-list');
-        if (roadmapListEl) {
-            roadmapListEl.innerHTML = '';
+        // Render Section 05: Top Growth Opportunities
+        const oppListEl = document.getElementById('bga-opp-list');
+        if (oppListEl) {
+            oppListEl.innerHTML = '';
             top3Gaps.forEach((gap, idx) => {
-                const nextGap = top3Gaps[idx + 1];
-                const gapLine = categoryGapLines[gap.name] || '';
-                const unlocksMsg = nextGap ? `UNLOCKS &rarr; ${nextGap.displayName.toUpperCase()}` : '';
+                const meta = gap.meta;
+                const optNum = `OPPORTUNITY 0${idx + 1}`;
+                
+                let tagText = 'CRITICAL';
+                if (idx === 1) tagText = 'HIGH';
+                else if (idx === 2) tagText = 'MEDIUM';
 
-                const stepItem = document.createElement('div');
-                stepItem.style.display = 'flex';
-                stepItem.style.gap = '20px';
-                stepItem.style.alignItems = 'flex-start';
-                stepItem.innerHTML = `
-                    <div style="border:2px solid #000;padding:6px 12px;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:16px;line-height:1;color:#000;margin-top:2px;flex-shrink:0;">
-                        ${idx + 1}
+                const oppCard = document.createElement('div');
+                oppCard.className = 'bga-card bga-opp-card';
+                oppCard.innerHTML = `
+                    <div class="bga-opp-card__header">
+                        <span class="bga-opp-card__tag">${optNum}</span>
+                        <span class="bga-badge-pill" style="font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700;">${tagText}</span>
                     </div>
+                    <h3 class="bga-opp-card__title">${meta.displayName}</h3>
+                    <p class="bga-opp-card__desc">${meta.healthDesc}</p>
+                    
+                    <div class="bga-opp-card__grid">
+                        <div>
+                            <div class="bga-opp-card__col-label">CURRENT IMPACT</div>
+                            <div class="bga-opp-card__col-val">${meta.oppImpact}</div>
+                        </div>
+                        <div>
+                            <div class="bga-opp-card__col-label">POTENTIAL</div>
+                            <div class="bga-opp-card__col-val bga-opp-card__col-val--green">${meta.potentialOutcome}</div>
+                        </div>
+                    </div>
+
                     <div>
-                        <h4 style="font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:700;color:#000;margin-bottom:8px;">${gap.displayName}</h4>
-                        <p style="font-size:15px;color:#64748b;line-height:1.5;margin:0 0 10px 0;font-weight:500;">${gapLine}</p>
-                        ${unlocksMsg ? `<div style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.05em;color:#3a7bff;font-weight:700;text-transform:uppercase;">${unlocksMsg}</div>` : ''}
+                        <div class="bga-opp-card__outcome-lbl">EXPECTED OUTCOME</div>
+                        <div class="bga-opp-card__outcome-val">${meta.expectedOutcome}</div>
                     </div>
                 `;
-                roadmapListEl.appendChild(stepItem);
+                oppListEl.appendChild(oppCard);
             });
         }
 
-        // Section 8: Render "Your Business: Today vs. Potential" — dynamic from bottom-5 categories
-        const bottom5 = sortedCats.slice(0, 5);
-        const detailsGridEl = document.getElementById('bga-stage-details-grid');
-        if (detailsGridEl) {
-            const todayItems = bottom5.map(c => todayVsPotential[c.name]?.today || c.displayName).join('</li><li style="display:flex;gap:12px;font-size:14px;color:#475569;font-weight:500;align-items:baseline;"><span style="color:#ef4444;font-family:monospace;">—</span><span>');
-            const potentialItems = bottom5.map(c => todayVsPotential[c.name]?.potential || c.displayName).join('</li><li style="display:flex;gap:12px;font-size:14px;color:#475569;font-weight:500;align-items:baseline;"><span style="color:#10b981;font-family:monospace;">+</span><span>');
-            detailsGridEl.style.gridTemplateColumns = 'repeat(2, 1fr)';
-            detailsGridEl.innerHTML = `
-                <div style="border-right:1px solid #f1f5f9;padding-right:32px;">
-                    <div class="mono-small" style="color:#64748b;margin-bottom:8px;">TODAY</div>
-                    <h3 style="font-family:'Space Grotesk',sans-serif;font-size:24px;font-weight:700;margin-bottom:20px;color:#000;">${activeStage.name}</h3>
-                    <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:14px;">
-                        <li style="display:flex;gap:12px;font-size:14px;color:#475569;font-weight:500;align-items:baseline;"><span style="color:#ef4444;font-family:monospace;">—</span><span>${todayItems}</span></li>
+        // Render Section 06: 30-Day Growth Roadmap
+        const roadmapWeeksEl = document.getElementById('bga-roadmap-weeks');
+        if (roadmapWeeksEl) {
+            roadmapWeeksEl.innerHTML = '';
+            
+            const weeksData = [
+                {
+                    week: 'WEEK 1',
+                    ratio: '01 / 04',
+                    title: 'Diagnose and set the baseline',
+                    bullets: [
+                        'Audit current surfaces against the report findings.',
+                        'Instrument tracking to know what changes.',
+                        'Draft the sharpened one-liner.'
+                    ],
+                    expectedOutcome: 'A written baseline and a clear scoreboard.',
+                    businessImpact: 'You stop guessing what\'s moving.'
+                },
+                {
+                    week: 'WEEK 2',
+                    ratio: '02 / 04',
+                    title: `Fix ${top3Gaps[0].meta.displayName.toLowerCase()}`,
+                    bullets: [
+                        'Ship the top-priority change end-to-end.',
+                        'Add proof directly next to the decision moment.',
+                        'Publish the updated one-liner across surfaces.'
+                    ],
+                    expectedOutcome: 'The biggest gap in the report is closed.',
+                    businessImpact: 'Conversion rate ticks up within the same traffic.'
+                },
+                {
+                    week: 'WEEK 3',
+                    ratio: '03 / 04',
+                    title: `Address ${top3Gaps[1].meta.displayName.toLowerCase()}`,
+                    bullets: [
+                        'Build the lead-capture asset and route.',
+                        'Wire the follow-up to a simple sequence.',
+                        'Add the missing trust signals to the footer.'
+                    ],
+                    expectedOutcome: 'Interested visitors stop leaving as strangers.',
+                    businessImpact: 'You start compounding attention instead of renting it.'
+                },
+                {
+                    week: 'WEEK 4',
+                    ratio: '04 / 04',
+                    title: 'Review, measure, and lock in',
+                    bullets: [
+                        'Compare against the Week 1 baseline.',
+                        'Kill anything that didn\'t move the number.',
+                        'Set the weekly cadence you\'ll keep after this sprint.'
+                    ],
+                    expectedOutcome: 'A working system you can hand off or scale.',
+                    businessImpact: 'Growth stops depending on any single push.'
+                }
+            ];
+
+            weeksData.forEach(w => {
+                const card = document.createElement('div');
+                card.className = 'bga-card bga-roadmap-card';
+                card.innerHTML = `
+                    <div class="bga-roadmap-card__top">
+                        <span class="bga-roadmap-card__week">${w.week}</span>
+                        <span class="bga-roadmap-card__ratio">${w.ratio}</span>
+                    </div>
+                    <h3 class="bga-roadmap-card__title">${w.title}</h3>
+                    <ul class="bga-roadmap-card__bullets">
+                        ${w.bullets.map(b => `<li class="bga-roadmap-card__bullet-item">${b}</li>`).join('')}
                     </ul>
-                </div>
-                <div style="padding-left:32px;">
-                    <div class="mono-small" style="color:#64748b;margin-bottom:8px;">POTENTIAL</div>
-                    <h3 style="font-family:'Space Grotesk',sans-serif;font-size:24px;font-weight:700;margin-bottom:8px;color:#3a7bff;">${potentialScore}%</h3>
-                    <p style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#94a3b8;letter-spacing:0.1em;text-transform:uppercase;margin:0 0 20px 0;">Estimated Potential Score</p>
-                    <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:14px;">
-                        <li style="display:flex;gap:12px;font-size:14px;color:#475569;font-weight:500;align-items:baseline;"><span style="color:#10b981;font-family:monospace;">+</span><span>${potentialItems}</span></li>
-                    </ul>
-                </div>
-            `;
-        }
-
-        // Render Pattern quote
-        const patternBlockEl = document.getElementById('bga-pattern-block');
-        if (patternBlockEl) {
-            patternBlockEl.innerHTML = `
-                <div class="mono-small" style="color:#64748b;margin-bottom:16px;">PATTERN</div>
-                <blockquote style="font-family:'Space Grotesk',sans-serif;font-size:24px;font-weight:600;line-height:1.45;color:#0f172a;border-left:none;padding-left:0;margin:0 0 16px 0;">
-                    &ldquo;${activeStage.patternQuote}&rdquo;
-                </blockquote>
-                <p style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#94a3b8;letter-spacing:0.1em;text-transform:uppercase;margin:0;">
-                    PATTERN-LEVEL OBSERVATION ACROSS BUSINESSES AT STAGE ${activeStageIndex + 1}. NOT A CLAIM ABOUT ANY SPECIFIC COMPETITOR.
-                </p>
-            `;
-        }
-
-        // Section 10 + 11: Render Trust Stat + ₦5,000 Unlock Offer above paywall
-        const trustStatEl = document.getElementById('bga-trust-stat');
-        if (trustStatEl) {
-            trustStatEl.innerHTML = `
-                <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
-                    <span style="font-family:'JetBrains Mono',monospace;font-size:36px;font-weight:700;color:#3a7bff;">50+</span>
-                    <p style="font-size:15px;color:#475569;line-height:1.6;max-width:52ch;margin:0;">businesses have taken our free Growth Score. Many didn't stop there — they came back for branding, web, and content support too.</p>
-                </div>
-            `;
-        }
-
-        // Populate the review line under results header
-        const reviewLineEl = document.getElementById('bga-review-line');
-        if (reviewLineEl) reviewLineEl.textContent = `Based on our review of ${userData.businessName || 'your business'}`;
-
-        // Populate report closing footer
-        const closingBusinessEl = document.getElementById('bga-closing-business');
-        if (closingBusinessEl) closingBusinessEl.textContent = `This report was generated for ${userData.businessName || 'your business'} by Builtium.`;
-
-        // Lock & Unlock Management
-        function applyLockState(isPaid) {
-            const breakdownLock = document.getElementById('bga-breakdown-lock');
-            const breakdownList = document.getElementById('bga-breakdown-list');
-            const roadmapLock = document.getElementById('bga-roadmap-lock');
-            const roadmapList = document.getElementById('bga-roadmap-list');
-            const partnershipLock = document.getElementById('bga-partnership-lock');
-            const partnershipEl = document.getElementById('bga-partnership');
-            const schedulingCard = document.getElementById('bga-scheduling-card');
-            const upsellCard = document.getElementById('bga-upsell');
-            const unlockOffer = document.getElementById('bga-unlock-offer');
-            const unlockPaidConfirm = document.getElementById('bga-unlock-paid-confirm');
-
-            if (isPaid) {
-                if (breakdownLock) breakdownLock.style.display = 'none';
-                if (breakdownList) breakdownList.classList.remove('bga-paywall-blur');
-                if (roadmapLock) roadmapLock.style.display = 'none';
-                if (roadmapList) roadmapList.classList.remove('bga-paywall-blur');
-                if (partnershipLock) partnershipLock.style.display = 'none';
-                if (partnershipEl) partnershipEl.classList.remove('bga-paywall-blur');
-                if (schedulingCard) schedulingCard.style.display = 'block';
-                if (upsellCard) upsellCard.style.display = 'none';
-                if (unlockOffer) unlockOffer.style.display = 'none';
-                if (unlockPaidConfirm) unlockPaidConfirm.style.display = 'block';
-            } else {
-                if (breakdownLock) breakdownLock.style.display = 'flex';
-                if (breakdownList) breakdownList.classList.add('bga-paywall-blur');
-                if (roadmapLock) roadmapLock.style.display = 'flex';
-                if (roadmapList) roadmapList.classList.add('bga-paywall-blur');
-                if (partnershipLock) partnershipLock.style.display = 'flex';
-                if (partnershipEl) partnershipEl.classList.add('bga-paywall-blur');
-                if (schedulingCard) schedulingCard.style.display = 'none';
-                if (upsellCard) upsellCard.style.display = 'none'; // Use new unlock offer section instead
-                if (unlockOffer) unlockOffer.style.display = 'block';
-            }
-        }
-
-        applyLockState(isAlreadyPaid);
-
-        // Dismiss unlock offer ("Continue with free results")
-        const dismissUnlockBtn = document.getElementById('bga-dismiss-unlock');
-        if (dismissUnlockBtn) {
-            dismissUnlockBtn.addEventListener('click', () => {
-                const unlockOffer = document.getElementById('bga-unlock-offer');
-                if (unlockOffer) unlockOffer.style.display = 'none';
+                    <div class="bga-roadmap-card__inset">
+                        <div class="bga-roadmap-card__inset-group">
+                            <span class="bga-roadmap-card__inset-lbl">EXPECTED OUTCOME</span>
+                            <span class="bga-roadmap-card__inset-val">${w.expectedOutcome}</span>
+                        </div>
+                        <div class="bga-roadmap-card__inset-group">
+                            <span class="bga-roadmap-card__inset-lbl">BUSINESS IMPACT</span>
+                            <span class="bga-roadmap-card__inset-val">${w.businessImpact}</span>
+                        </div>
+                    </div>
+                `;
+                roadmapWeeksEl.appendChild(card);
             });
         }
 
-        // Setup Paystack Popup Triggers
-        const unlockButtons = document.querySelectorAll('.bga-btn-unlock-trigger, #bga-blueprint-cta, #bga-paystack-btn');
+        // Render Section 08: Industry Benchmark Rows
+        const bmRowsEl = document.getElementById('bga-bm-rows');
+        if (bmRowsEl) {
+            bmRowsEl.innerHTML = '';
+            
+            const benchmarkMap = [
+                { cat: 'DISCOVERABILITY', label: 'Discoverability', avg: 52, top: 78 },
+                { cat: 'WEBSITE', label: 'Website Experience', avg: 61, top: 88 },
+                { cat: 'POSITIONING', label: 'Positioning', avg: 55, top: 84 },
+                { cat: 'SOCIAL_PROOF', label: 'Social Proof', avg: 48, top: 82 },
+                { cat: 'LEAD_CAPTURE', label: 'Lead Generation', avg: 46, top: 79 },
+                { cat: 'RETENTION', label: 'Retention', avg: 40, top: 76 }
+            ];
+
+            benchmarkMap.forEach(bm => {
+                const youPct = Math.round(((scores[bm.cat] || 0) / categoryMaxPoints[bm.cat]) * 100);
+                const row = document.createElement('div');
+                row.className = 'bga-bm-row';
+                row.innerHTML = `
+                    <span class="bga-bm-row__name">${bm.label}</span>
+                    <span class="bga-bm-row__val bga-bm-row__val--you">you ${youPct}</span>
+                    <span class="bga-bm-row__val">avg ${bm.avg}</span>
+                    <span class="bga-bm-row__val">top ${bm.top}</span>
+                `;
+                bmRowsEl.appendChild(row);
+            });
+        }
+
+        // Section 11 Blueprint Pill stage update
+        const bpStagePill = document.getElementById('bga-blueprint-stage-pill');
+        if (bpStagePill) {
+            bpStagePill.textContent = `Built for businesses at the ${activeStage.name} stage`;
+        }
+
+        const bpFocusBox = document.getElementById('bga-blueprint-focus-box');
+        if (bpFocusBox) {
+            bpFocusBox.innerHTML = `Based on your report, the blueprint prioritizes: <strong>${top3Gaps[0].meta.displayName} · ${top3Gaps[1].meta.displayName}</strong>`;
+        }
+
+        // Smooth Scroll Continue Button (Transition Section 10)
+        const continueBtn = document.getElementById('bga-transition-continue-btn');
+        if (continueBtn) {
+            continueBtn.addEventListener('click', () => {
+                const upsellSec = document.getElementById('sec-upsell-blueprint');
+                if (upsellSec) {
+                    upsellSec.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        }
+
+        // Setup Paystack Popup Triggers across all unlock buttons
+        const unlockButtons = document.querySelectorAll('.bga-btn-unlock-trigger, #bga-main-cta-btn, #bga-final-cta-btn, #bga-top-unlock-link');
         unlockButtons.forEach(btn => {
-            btn.replaceWith(btn.cloneNode(true)); // Clean listeners to prevent duplicate triggers
+            btn.replaceWith(btn.cloneNode(true));
         });
 
-        const refreshedButtons = document.querySelectorAll('.bga-btn-unlock-trigger, #bga-blueprint-cta, #bga-paystack-btn');
+        const refreshedButtons = document.querySelectorAll('.bga-btn-unlock-trigger, #bga-main-cta-btn, #bga-final-cta-btn, #bga-top-unlock-link');
         refreshedButtons.forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.preventDefault();
@@ -1725,7 +1841,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         
                         // Save paid status & apply UI unlocks
                         localStorage.setItem('bga_paid', 'true');
-                        applyLockState(true);
                         submitHiddenForm(true);
                         
                         // Show thank you screen / confirmation
@@ -1733,6 +1848,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                         const scheduleCard = document.getElementById('bga-scheduling-card');
                         if (scheduleCard) {
+                            scheduleCard.style.display = 'block';
                             scheduleCard.scrollIntoView({ behavior: 'smooth' });
                         }
                     },
@@ -1745,6 +1861,42 @@ document.addEventListener('DOMContentLoaded', () => {
                 handler.openIframe();
             });
         });
+
+        // Diagnostic Modal Handlers
+        const diagModal = document.getElementById('bga-diagnostic-modal');
+        const modalCloseBtn = document.getElementById('bga-modal-close-btn');
+
+        function openDiagnosticModal(data) {
+            if (!diagModal) return;
+            
+            document.getElementById('bga-modal-icon').innerHTML = data.icon;
+            document.getElementById('bga-modal-cat-name').textContent = data.name;
+            document.getElementById('bga-modal-pct').textContent = `${data.percentage}%`;
+            
+            const badgeEl = document.getElementById('bga-modal-badge');
+            badgeEl.textContent = data.badgeText;
+            badgeEl.className = `bga-modal-score__badge ${data.badgeClass}`;
+
+            document.getElementById('bga-modal-finding').textContent = data.finding;
+            document.getElementById('bga-modal-impact').textContent = data.impact;
+            document.getElementById('bga-modal-fix').textContent = data.fix;
+
+            diagModal.style.display = 'flex';
+        }
+
+        if (modalCloseBtn) {
+            modalCloseBtn.addEventListener('click', () => {
+                if (diagModal) diagModal.style.display = 'none';
+            });
+        }
+
+        if (diagModal) {
+            diagModal.addEventListener('click', (e) => {
+                if (e.target === diagModal) {
+                    diagModal.style.display = 'none';
+                }
+            });
+        }
 
         // Setup Manual Call Scheduling Handoff Form
         const confirmPhoneInput = document.getElementById('bga-confirm-phone');
@@ -1785,7 +1937,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 .then(() => {
                     refreshedScheduleBtn.style.display = 'none';
                     confirmPhoneInput.disabled = true;
-                    scheduleSuccessMsg.style.display = 'block';
+                    if (scheduleSuccessMsg) scheduleSuccessMsg.style.display = 'block';
                 })
                 .catch(err => {
                     console.error("Scheduling confirm error:", err);
