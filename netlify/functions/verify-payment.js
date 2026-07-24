@@ -242,7 +242,7 @@ exports.handler = async (event) => {
     }
 
     const amountPaid = paystackResult.data.amount; // in kobo
-    if (amountPaid < 50000) { // ₦500 = 50,000 kobo
+    if (amountPaid < 10000) { // ₦100 = 10,000 kobo
       return {
         statusCode: 400,
         headers: { 'Access-Control-Allow-Origin': '*' },

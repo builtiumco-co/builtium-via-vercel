@@ -1684,6 +1684,75 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
+        // Smooth Scroll Continue Button (Transition Section 10)
+        const continueBtn = document.getElementById('bga-transition-continue-btn');
+        if (continueBtn) {
+            continueBtn.addEventListener('click', () => {
+                const upsellSec = document.getElementById('sec-upsell-blueprint');
+                if (upsellSec) {
+                    upsellSec.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        }
+
+        // Setup Paystack Popup Triggers across all unlock buttons (₦100 Live Testing)
+        const unlockButtons = document.querySelectorAll('.bga-btn-unlock-trigger, #bga-main-cta-btn, #bga-final-cta-btn, #bga-top-unlock-link');
+        unlockButtons.forEach(btn => {
+            btn.replaceWith(btn.cloneNode(true));
+        });
+
+        const refreshedButtons = document.querySelectorAll('.bga-btn-unlock-trigger, #bga-main-cta-btn, #bga-final-cta-btn, #bga-top-unlock-link');
+        refreshedButtons.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                
+                if (typeof PaystackPop === 'undefined' || !paystackPublicKey) {
+                    alert("Paystack payment system is currently initializing. Please try again in a few seconds.");
+                    return;
+                }
+
+                const originalText = btn.textContent;
+                btn.textContent = "Opening Checkout...";
+                btn.disabled = true;
+
+                const userEmail = userData.email && userData.email.trim() !== '' ? userData.email.trim() : 'customer@builtiumco.com';
+
+                const handler = PaystackPop.setup({
+                    key: paystackPublicKey,
+                    email: userEmail,
+                    amount: 100 * 100, // ₦100 in kobo (10,000 kobo)
+                    currency: 'NGN',
+                    ref: 'builtium_' + Math.floor((Math.random() * 1000000000) + 1),
+                    callback: function(response) {
+                        btn.textContent = "Payment Confirmed!";
+                        btn.disabled = false;
+                        
+                        // Submit payment details to Netlify hidden form
+                        submitPaymentToNetlify(response.reference, 'success');
+                        
+                        // Save paid status & apply UI unlocks
+                        localStorage.setItem('bga_paid', 'true');
+                        submitHiddenForm(true);
+                        
+                        // Show thank you screen / confirmation
+                        showPaymentThankYou();
+
+                        const scheduleCard = document.getElementById('bga-scheduling-card');
+                        if (scheduleCard) {
+                            scheduleCard.style.display = 'block';
+                            scheduleCard.scrollIntoView({ behavior: 'smooth' });
+                        }
+                    },
+                    onClose: function() {
+                        btn.textContent = originalText;
+                        btn.disabled = false;
+                        console.log('Payment window closed.');
+                    }
+                });
+                handler.openIframe();
+            });
+        });
+
         // Diagnostic Modal Handlers (Accessible Dialog with Focus Lock and ESC key)
         const diagModal = document.getElementById('bga-diagnostic-modal');
         const modalCloseBtn = document.getElementById('bga-modal-close-btn');
