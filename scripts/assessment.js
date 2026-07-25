@@ -779,7 +779,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let paystackPublicKey = 'pk_live_37e6be6558a9d9998c9ec0c2a22b72e854fd54c5';
     setTimeout(() => {
-        fetch('/.netlify/functions/get-config')
+        fetch('/api/get-config')
             .then(res => res.json())
             .then(config => {
                 if (config.paystackPublicKey) {
@@ -927,20 +927,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 phone: userData.phone
             }));
 
-            // Sync/Create session row immediately in Google Sheets (non-blocking)
-            fetch('/.netlify/functions/audit-log', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    action: 'create',
-                    sessionId: sessionId,
-                    data: {
-                        businessName: userData.businessName,
-                        email: userData.email,
-                        phone: userData.phone
-                    }
-                })
-            }).catch(err => console.error("Logging initial creation failed:", err));
+            // Notify Builtium Audit Bot on session start
+            try {
+                fetch('/api/audit-log', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'create',
+                        sessionId: sessionId,
+                        data: {
+                            businessName: userData.businessName,
+                            email: userData.email,
+                            phone: userData.phone
+                        }
+                    })
+                }).catch(err => console.warn('Audit start log error:', err));
+            } catch (err) {
+                console.warn('Audit start fetch error:', err);
+            }
 
             showScreen(screenQuestions);
             loadQuestion(1); // Jump to question index 1 (Industry) since index 0 (Business Name) is answered
@@ -989,24 +993,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!isValid) return;
         }
 
-        // Log answer update to Google Sheets (non-blocking async)
-        const ansVal = answers[currentQuestionIndex];
-        const logAns = q.type === 'profile' ? ansVal : (ansVal ? ansVal.text : null);
-        if (logAns !== null) {
-            fetch('/.netlify/functions/audit-log', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    action: 'update',
-                    sessionId: sessionId,
-                    data: {
-                        type: 'answer',
-                        questionNum: currentQuestionIndex + 1,
-                        answerText: Array.isArray(logAns) ? logAns.join(', ') : String(logAns)
-                    }
-                })
-            }).catch(err => console.error("Logging answer update failed:", err));
-        }
+
 
         if (currentQuestionIndex < quizData.length - 1) {
             currentQuestionIndex++;
@@ -1734,14 +1721,11 @@ document.addEventListener('DOMContentLoaded', () => {
                         localStorage.setItem('bga_paid', 'true');
                         submitHiddenForm(true);
                         
-                        // Show thank you screen / confirmation
-                        showPaymentThankYou();
+                        btn.textContent = "✓ Paid & Unlocked";
+                        btn.style.background = "#10B981";
 
-                        const scheduleCard = document.getElementById('bga-scheduling-card');
-                        if (scheduleCard) {
-                            scheduleCard.style.display = 'block';
-                            scheduleCard.scrollIntoView({ behavior: 'smooth' });
-                        }
+                        // Show payment confirmation thank you modal with outreach info
+                        showPaymentThankYou();
                     },
                     onClose: function() {
                         btn.textContent = originalText;
@@ -1826,55 +1810,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // Setup Manual Call Scheduling Handoff Form
-        const confirmPhoneInput = document.getElementById('bga-confirm-phone');
-        const submitScheduleBtn = document.getElementById('bga-submit-schedule-btn');
-        const scheduleSuccessMsg = document.getElementById('bga-schedule-success-msg');
-
-        if (confirmPhoneInput && userData.phone) {
-            confirmPhoneInput.value = userData.phone;
-        }
-
-        if (submitScheduleBtn) {
-            submitScheduleBtn.replaceWith(submitScheduleBtn.cloneNode(true));
-        }
-
-        const refreshedScheduleBtn = document.getElementById('bga-submit-schedule-btn');
-        if (refreshedScheduleBtn) {
-            refreshedScheduleBtn.addEventListener('click', () => {
-                const confirmedPhone = confirmPhoneInput.value.trim();
-                if (confirmedPhone === "") {
-                    confirmPhoneInput.style.borderColor = 'red';
-                    return;
-                }
-                
-                refreshedScheduleBtn.disabled = true;
-                refreshedScheduleBtn.textContent = "Submitting...";
-
-                // Notify backend of phone and final completion state
-                fetch('/.netlify/functions/verify-payment', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        reference: 'MANUAL_CONFIRMED',
-                        sessionId: sessionId,
-                        phone: confirmedPhone
-                    })
-                })
-                .then(res => res.json())
-                .then(() => {
-                    refreshedScheduleBtn.style.display = 'none';
-                    confirmPhoneInput.disabled = true;
-                    if (scheduleSuccessMsg) scheduleSuccessMsg.style.display = 'block';
-                })
-                .catch(err => {
-                    console.error("Scheduling confirm error:", err);
-                    refreshedScheduleBtn.disabled = false;
-                    refreshedScheduleBtn.textContent = "Confirm & Request Schedule";
-                });
-            });
-        }
-
         // Function to submit ALL 55 answers + metadata to Netlify Forms & Function
         function submitHiddenForm(isPaidStatus = false) {
             const hiddenForm = document.getElementById('bga-lead-form');
@@ -1933,42 +1868,31 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             setVal('bga-hidden-answers', JSON.stringify(parsedAnswers));
 
-            // Log completion to Google Sheets via Netlify Function
-            fetch('/.netlify/functions/audit-log', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    action: 'update',
-                    sessionId: sessionId,
-                    data: {
-                        type: 'completion',
-                        paid: isPaidStatus,
-                        finalResult: activeStage ? activeStage.name : '',
-                        scores: scores,
-                        answers: parsedAnswers
-                    }
-                })
-            }).catch(err => console.error("Logging completion failed:", err));
 
-            // Post Form silently to Netlify Forms endpoint
+
+            // Post completion metrics silently to Builtium Audit Bot via Vercel API
             try {
-                const formData = new FormData(hiddenForm);
-                if (!formData.has('form-name')) {
-                    formData.append('form-name', 'bga-results');
-                }
-                const searchParams = new URLSearchParams();
-                for (const [key, value] of formData.entries()) {
-                    searchParams.append(key, value);
-                }
-                fetch("/", {
+                fetch("/api/audit-log", {
                     method: "POST",
-                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                    body: searchParams.toString()
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        action: 'update',
+                        sessionId: sessionId,
+                        data: {
+                            type: 'completion',
+                            businessName: userData.businessName,
+                            email: userData.email,
+                            phone: userData.phone,
+                            finalResult: activeStage ? activeStage.name : `${totalPercentage}%`,
+                            scores: scores,
+                            paid: isPaidStatus
+                        }
+                    })
                 })
-                .then(() => console.log("All 55 answers + metadata successfully submitted to Netlify Forms."))
-                .catch(err => console.error("Error submitting BGA metrics to Netlify:", err));
+                .then(() => console.log("Audit completion successfully logged to Vercel API."))
+                .catch(err => console.error("Error logging completion to Vercel API:", err));
             } catch (err) {
-                console.error("Error constructing FormData for Netlify Forms:", err);
+                console.error("Error sending completion payload to Vercel API:", err);
             }
         }
 
@@ -1976,33 +1900,25 @@ document.addEventListener('DOMContentLoaded', () => {
         submitHiddenForm(isAlreadyPaid);
     }
 
-    // --- Paystack Netlify Payment Confirmation Helper ---
+    // --- Paystack Vercel Payment Confirmation Helper ---
     function submitPaymentToNetlify(paymentRef, status) {
-        const form = document.querySelector('form[name="payment-confirmation"]');
-        if (!form) return;
-
-        const setField = (name, val) => {
-            const input = form.querySelector(`input[name="${name}"]`);
-            if (input) input.value = val;
-        };
-
-        setField('business_name', userData.businessName || '');
-        setField('email', userData.email || '');
-        setField('payment_reference', paymentRef || '');
-        setField('payment_status', status || 'success');
-        setField('payment_method', 'Paystack');
-        setField('submission_date', new Date().toLocaleDateString());
-
         try {
-            const formData = new FormData(form);
-            fetch('/', {
+            fetch('/api/verify-payment', {
                 method: 'POST',
-                body: formData
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    reference: paymentRef,
+                    sessionId: sessionId,
+                    phone: userData.phone,
+                    businessName: userData.businessName,
+                    email: userData.email
+                })
             })
-            .then(() => console.log("Payment confirmation recorded on Netlify."))
-            .catch(err => console.error("Payment confirmation Netlify error:", err));
+            .then(res => res.json())
+            .then(data => console.log("Payment verification recorded via Vercel API:", data))
+            .catch(err => console.error("Payment confirmation Vercel API error:", err));
         } catch (err) {
-            console.error("Error submitting Netlify payment confirmation:", err);
+            console.error("Error submitting Vercel payment confirmation:", err);
         }
     }
 
@@ -2019,11 +1935,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Thank You screen "Back to Home" button
-    const thankYouHomeBtn = document.getElementById('bga-thank-you-home-btn');
-    if (thankYouHomeBtn) {
-        thankYouHomeBtn.addEventListener('click', () => {
-            window.location.href = '/';
+    // Thank You screen close button
+    const thankYouCloseBtn = document.getElementById('bga-thank-you-close-btn') || document.getElementById('bga-thank-you-home-btn');
+    if (thankYouCloseBtn) {
+        thankYouCloseBtn.addEventListener('click', () => {
+            if (thankYouScreen) {
+                thankYouScreen.classList.remove('active');
+                thankYouScreen.style.display = 'none';
+            }
+            document.body.style.overflow = '';
         });
     }
 });

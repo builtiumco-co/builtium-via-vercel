@@ -185,36 +185,11 @@
     return radio ? radio.value : '';
   }
 
-  // ---- SUBMIT HELPER (Netlify Forms + Serverless Function) ----
+  // ---- SUBMIT HELPER (Vercel API + Discord Webhooks) ----
   async function performSubmission(formElement, payload, formName) {
-    let netlifySuccess = false;
-
-    // 1. Submit to Netlify Forms endpoint (always reliable on Netlify static hosting)
-    try {
-      const fd = new FormData(formElement);
-      if (!fd.has('form-name')) {
-        fd.append('form-name', formName);
-      }
-      const searchParams = new URLSearchParams();
-      for (const [key, value] of fd.entries()) {
-        searchParams.append(key, value);
-      }
-      const netlifyRes = await fetch('/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: searchParams.toString()
-      });
-      if (netlifyRes.ok) {
-        netlifySuccess = true;
-      }
-    } catch (err) {
-      console.warn('Netlify Forms submission error:', err);
-    }
-
-    // 2. Submit to Netlify Serverless Function (Google Sheets & email notification)
     let functionSuccess = false;
     try {
-      const fnRes = await fetch('/.netlify/functions/services-submit', {
+      const fnRes = await fetch('/api/services-submit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
@@ -229,8 +204,7 @@
       console.warn('Serverless function services-submit error:', err);
     }
 
-    // If EITHER succeeds, we count the submission as successful
-    return netlifySuccess || functionSuccess;
+    return functionSuccess;
   }
 
   // ---- LAUNCH FORM ----

@@ -1,0 +1,8 @@
+module.exports = async function handler(req, res) {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Content-Type', 'application/json');
+
+  return res.status(200).json({
+    paystackPublicKey: process.env.PAYSTACK_PUBLIC_KEY || ''
+  });
+};

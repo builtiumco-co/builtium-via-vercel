@@ -89,19 +89,18 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             const formData = new FormData(contactForm);
-            if (!formData.has('form-name')) {
-                formData.append('form-name', 'contact');
-            }
+            const payload = {
+                name: formData.get('name') || '',
+                email: formData.get('email') || '',
+                message: formData.get('message') || '',
+                phone: formData.get('phone') || '',
+                subject: formData.get('subject') || 'Homepage Contact Form'
+            };
 
-            const searchParams = new URLSearchParams();
-            for (const [key, value] of formData.entries()) {
-                searchParams.append(key, value);
-            }
-
-            fetch('/', {
+            fetch('/api/contact-submit', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: searchParams.toString()
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
             })
             .then(() => {
                 contactForm.style.display = 'none';
