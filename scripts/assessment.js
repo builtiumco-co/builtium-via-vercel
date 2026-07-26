@@ -1822,6 +1822,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Post completion metrics & all 55 answers to Builtium Audit Bot via Vercel API
             try {
+                const stageResult = (typeof activeStage !== 'undefined' && activeStage && activeStage.name) ? activeStage.name : 'Audit Completed';
                 fetch("/api/audit-log", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
@@ -1830,11 +1831,11 @@ document.addEventListener('DOMContentLoaded', () => {
                         sessionId: sessionId,
                         data: {
                             type: 'completion',
-                            businessName: userData.businessName,
-                            email: userData.email,
-                            phone: userData.phone,
-                            finalResult: activeStage ? activeStage.name : `${totalPercentage}%`,
-                            scores: scores,
+                            businessName: userData.businessName || '',
+                            email: userData.email || '',
+                            phone: userData.phone || '',
+                            finalResult: stageResult,
+                            scores: scores || {},
                             answers: parsedAnswers,
                             paid: isPaidStatus
                         }

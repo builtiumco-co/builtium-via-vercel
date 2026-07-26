@@ -45,80 +45,97 @@ module.exports = async function handler(req, res) {
       return res.status(200).json({ success: true, message: 'Session started notification sent.' });
     }
 
-    if (action === 'update' && data.type === 'completion') {
+    if (action === 'update' || action === 'completion' || data.type === 'completion') {
       const scores = data.scores || {};
       const scoreFields = Object.entries(scores)
         .map(([k, v]) => `**${k}**: ${v}/5`)
         .join(' | ');
 
-      const mainFields = [
+      const overviewFields = [
         { name: '🏢 Business Name', value: data.businessName || 'N/A', inline: true },
         { name: '📧 Email', value: data.email || 'N/A', inline: true },
         { name: '📞 Phone', value: data.phone || 'N/A', inline: true },
         { name: '🏁 Final Stage Result', value: `**${data.finalResult || 'Audit Completed'}**`, inline: false },
         { name: '📈 Category Scores', value: scoreFields || 'Scores recorded', inline: false },
         { name: '💳 Paid Status', value: data.paid ? '✅ Purchased (₦500)' : '⏳ Completed (Not Purchased)', inline: true },
-        { name: '🆔 Session ID', value: `\`${sessionId}\``, inline: true }
+        { name: '🆔 Session ID', value: `\`${sessionId || 'N/A'}\``, inline: true }
       ];
 
-      // Format full 55 answers grouped by category section
+      // Format 55 answers into requested template grouped by section
       const sectionFields = [];
       if (Array.isArray(data.answers) && data.answers.length > 0) {
         const sectionsMap = {};
         data.answers.forEach(item => {
-          const sec = item.section || 'GENERAL';
+          const sec = (item.section || 'GENERAL').toUpperCase();
           if (!sectionsMap[sec]) sectionsMap[sec] = [];
-          const ptsStr = item.points !== null && item.points !== undefined ? ` [${item.points} pts]` : '';
-          sectionsMap[sec].push(`• **Q${item.qNum}** (${item.question}): ${item.answer}${ptsStr}`);
+          
+          const qText = item.question ? `Q${item.qNum}: ${item.question}` : `Q${item.qNum}`;
+          const aText = `Answer: ${item.answer || 'Not answered'}`;
+          sectionsMap[sec].push(`${qText}\n${aText}`);
         });
 
+        // Convert grouped questions into Discord embed fields per section
         for (const [secName, qList] of Object.entries(sectionsMap)) {
-          let content = qList.join('\n');
-          // Truncate to Discord 1024 char field limit if necessary
-          if (content.length > 1000) {
-            content = content.substring(0, 990) + '\n...[truncated]';
-          }
-          sectionFields.push({
-            name: `📋 Section: ${secName}`,
-            value: content || 'No answers',
-            inline: false
+          const count = qList.length;
+          const sectionTitle = `📋 ${secName} (${count} question${count === 1 ? '' : 's'})`;
+          
+          let currentChunk = [];
+          let currentLen = 0;
+          let partIdx = 1;
+
+          qList.forEach(itemStr => {
+            if (currentLen + itemStr.length + 2 > 980) {
+              sectionFields.push({
+                name: `${sectionTitle}${partIdx > 1 ? ` (Part ${partIdx})` : ''}`,
+                value: currentChunk.join('\n\n'),
+                inline: false
+              });
+              partIdx++;
+              currentChunk = [itemStr];
+              currentLen = itemStr.length;
+            } else {
+              currentChunk.push(itemStr);
+              currentLen += itemStr.length + 2;
+            }
           });
+
+          if (currentChunk.length > 0) {
+            sectionFields.push({
+              name: `${sectionTitle}${partIdx > 1 ? ` (Part ${partIdx})` : ''}`,
+              value: currentChunk.join('\n\n'),
+              inline: false
+            });
+          }
         }
       }
 
-      // Combine main fields and section fields
-      const allFields = [...mainFields, ...sectionFields];
+      // Deliver via Discord Webhook embeds
+      // Embed 1: Overview & Initial Sections (Up to 10 fields)
+      const embed1 = {
+        title: '🎯 Digital Growth Audit Completed! (Overview & Initial Sections)',
+        color: data.paid ? 0x10b981 : 0xf59e0b,
+        fields: [...overviewFields, ...sectionFields.slice(0, 8)],
+        timestamp: new Date().toISOString(),
+        footer: { text: 'Builtium Audit Bot • Audit Overview' }
+      };
 
-      // If total fields > 25 (Discord embed limit), split into 2 embeds in 1 webhook payload
-      if (allFields.length > 20) {
-        const embed1 = {
-          title: '🎯 Digital Growth Audit Completed! (Overview & Initial Sections)',
-          color: data.paid ? 0x10b981 : 0xf59e0b,
-          fields: allFields.slice(0, 15),
-          timestamp: new Date().toISOString(),
-          footer: { text: 'Builtium Audit Bot • Report Part 1' }
-        };
+      await sendDiscordWebhook(AUDIT_WEBHOOK_URL, embed1, 'Builtium Audit Bot');
 
-        const embed2 = {
-          title: '📋 Full 55 Answers Breakdown (Continued)',
-          color: data.paid ? 0x10b981 : 0xf59e0b,
-          fields: allFields.slice(15),
-          timestamp: new Date().toISOString(),
-          footer: { text: 'Builtium Audit Bot • Full Answers' }
-        };
-
-        await sendDiscordWebhook(AUDIT_WEBHOOK_URL, embed1, 'Builtium Audit Bot');
-        await sendDiscordWebhook(AUDIT_WEBHOOK_URL, embed2, 'Builtium Audit Bot');
-      } else {
-        const embed = {
-          title: '🎯 Digital Growth Audit Completed!',
-          color: data.paid ? 0x10b981 : 0xf59e0b,
-          fields: allFields,
-          timestamp: new Date().toISOString(),
-          footer: { text: 'Builtium Audit Bot • Full Audit Evaluation' }
-        };
-
-        await sendDiscordWebhook(AUDIT_WEBHOOK_URL, embed, 'Builtium Audit Bot');
+      // Embed 2: Remaining Sections if any (Up to 25 fields per embed)
+      if (sectionFields.length > 8) {
+        const remainingFields = sectionFields.slice(8);
+        // Chunk remaining fields into sets of 20 fields per embed
+        for (let i = 0; i < remainingFields.length; i += 20) {
+          const chunk = remainingFields.slice(i, i + 20);
+          const embedSub = {
+            title: `📋 Audit Answers Breakdown (Part ${Math.floor(i / 20) + 2})`,
+            color: data.paid ? 0x10b981 : 0xf59e0b,
+            fields: chunk,
+            timestamp: new Date().toISOString(),
+            footer: { text: 'Builtium Audit Bot • Full 55 Answers' }
+          };
+          await sendDiscordWebhook(AUDIT_WEBHOOK_URL, embedSub, 'Builtium Audit Bot');
+        }
       }
 
       return res.status(200).json({ success: true, message: 'Audit completion and full 55 answers delivered to Discord.' });
