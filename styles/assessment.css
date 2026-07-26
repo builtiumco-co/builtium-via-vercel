@@ -3652,21 +3652,31 @@ body {
   margin-top: 16px;
 }
 
-/* Diagnostic Modal Popup */
+/* Diagnostic & Thank You Modal Popup */
 .bga-modal-backdrop {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(15, 23, 42, 0.6);
-  backdrop-filter: blur(6px);
+  background: rgba(15, 23, 42, 0.75);
   z-index: 9999;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 20px;
   animation: fadeIn 0.25s ease forwards;
+}
+
+#bga-payment-thank-you {
+  z-index: 100000;
+  background: rgba(15, 23, 42, 0.85);
+}
+
+#bga-payment-thank-you .bga-modal-card {
+  z-index: 100001;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
+  border: 1px solid #E2E8F0;
 }
 
 .bga-modal-card {
@@ -3823,17 +3833,12 @@ body {
 }
 
 .bga-health-card__drawer {
-  display: none;
+  display: flex;
   margin-top: 16px;
   padding-top: 16px;
   border-top: 1px dashed #CBD5E1;
   flex-direction: column;
   gap: 12px;
-  animation: fadeIn 0.25s ease forwards;
-}
-
-.bga-health-card__drawer.open {
-  display: flex;
 }
 
 .bga-health-drawer-block {

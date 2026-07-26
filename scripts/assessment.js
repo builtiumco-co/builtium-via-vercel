@@ -1598,18 +1598,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     
                     <div class="bga-health-card__bottom">
                         <span class="bga-health-card__priority">${priorityText}</span>
-                        <div class="bga-health-card__action-wrap">
-                            <button class="bga-health-card__btn-toggle" aria-expanded="false" aria-controls="${drawerId}" id="btn-toggle-${catIdx}">
-                                Expand +
-                            </button>
-                            <button class="bga-health-card__action bga-btn-link" style="font-size:12px;" id="btn-modal-${catIdx}" aria-label="Open modal for ${meta.displayName}">
-                                Full Modal ↗
-                            </button>
-                        </div>
                     </div>
 
-                    <!-- Inline Expandable Drawer -->
-                    <div class="bga-health-card__drawer" id="${drawerId}" aria-hidden="true">
+                    <!-- Full Diagnostic Details (Always Visible) -->
+                    <div class="bga-health-card__drawer bga-health-card__drawer--full" id="${drawerId}">
                         <div class="bga-health-drawer-block">
                             <span class="bga-health-drawer-block__lbl">DIAGNOSTIC FINDING</span>
                             <p class="bga-health-drawer-block__val">${meta.diagnosticFinding}</p>
@@ -1624,48 +1616,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         </div>
                     </div>
                 `;
-
-                // Inline Expand/Collapse toggle listener
-                const toggleBtn = card.querySelector(`#btn-toggle-${catIdx}`);
-                const drawer = card.querySelector(`#${drawerId}`);
-                
-                toggleBtn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    const isOpen = drawer.classList.contains('open');
-                    if (isOpen) {
-                        drawer.classList.remove('open');
-                        drawer.setAttribute('aria-hidden', 'true');
-                        toggleBtn.setAttribute('aria-expanded', 'false');
-                        toggleBtn.textContent = 'Expand +';
-                    } else {
-                        drawer.classList.add('open');
-                        drawer.setAttribute('aria-hidden', 'false');
-                        toggleBtn.setAttribute('aria-expanded', 'true');
-                        toggleBtn.textContent = 'Collapse -';
-                    }
-                });
-
-                // Modal pop-up listener
-                const modalBtn = card.querySelector(`#btn-modal-${catIdx}`);
-                modalBtn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    openDiagnosticModal({
-                        name: meta.displayName,
-                        icon: meta.icon,
-                        percentage: pct,
-                        badgeText: badgeText,
-                        badgeClass: badgeClass,
-                        finding: meta.diagnosticFinding,
-                        impact: meta.businessImpact,
-                        fix: meta.recommendedFix
-                    }, modalBtn);
-                });
-
-                // Tapping card body toggles drawer
-                card.addEventListener('click', (e) => {
-                    if (e.target.closest('button')) return;
-                    toggleBtn.click();
-                });
 
                 healthGridEl.appendChild(card);
             });
@@ -1927,6 +1877,11 @@ document.addEventListener('DOMContentLoaded', () => {
     function showPaymentThankYou() {
         // Mark paid status in localStorage
         localStorage.setItem('bga_paid', 'true');
+
+        // Close any diagnostic modal if open
+        if (typeof closeDiagnosticModal === 'function') {
+            closeDiagnosticModal();
+        }
 
         if (thankYouScreen) {
             thankYouScreen.classList.add('active');
