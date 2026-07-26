@@ -846,74 +846,6 @@
                 </section>
 
 
-        <!-- DIAGNOSTIC FINDING MODAL (FOR HEALTH CHECK CARDS) -->
-        <div class="bga-modal-backdrop" id="bga-diagnostic-modal" style="display: none;" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="bga-modal-cat-name" aria-describedby="bga-modal-finding">
-            <div class="bga-modal-card">
-                <button class="bga-modal-close" id="bga-modal-close-btn" aria-label="Close diagnostic modal">&times;</button>
-                <div class="bga-modal-header">
-                    <div class="bga-modal-category">
-                        <span class="bga-modal-category__icon" id="bga-modal-icon" aria-hidden="true"></span>
-                        <h3 class="bga-modal-category__name" id="bga-modal-cat-name">Discoverability</h3>
-                    </div>
-                    <div class="bga-modal-score">
-                        <span class="bga-modal-score__badge" id="bga-modal-badge">Critical</span>
-                        <span class="bga-modal-score__pct" id="bga-modal-pct">41%</span>
-                    </div>
-                </div>
-                
-                <div class="bga-modal-body">
-                    <div class="bga-modal-block">
-                        <span class="bga-modal-block__label">DIAGNOSTIC FINDING</span>
-                        <p class="bga-modal-block__text" id="bga-modal-finding">
-                            Search intent is the cheapest, highest-fit demand you can capture.
-                        </p>
-                    </div>
-
-                    <div class="bga-modal-block bga-modal-block--impact">
-                        <span class="bga-modal-block__label">BUSINESS IMPACT</span>
-                        <p class="bga-modal-block__text" id="bga-modal-impact">
-                            High-intent prospects looking for your services cannot find your business in local search results or Google Maps, directing revenue to competitors.
-                        </p>
-                    </div>
-
-                    <div class="bga-modal-block bga-modal-block--fix">
-                        <span class="bga-modal-block__label">RECOMMENDED FIX</span>
-                        <p class="bga-modal-block__text" id="bga-modal-fix">
-                            Claim and fully optimize your Google Business Profile, align NAP consistency across directories, and establish a weekly review collection cadence.
-                        </p>
-                    </div>
-                </div>
-                
-                <div class="bga-modal-footer">
-                    <button class="bga-btn-primary bga-btn-unlock-trigger" style="height: 44px; font-size: 14px;">
-                        Unlock Actionable Blueprint
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- PAYMENT CONFIRMATION THANK YOU MODAL -->
-        <div class="bga-modal-backdrop" id="bga-payment-thank-you" style="display: none;" role="dialog" aria-modal="true">
-            <div class="bga-modal-card" style="text-align: center; max-width: 440px; padding: 36px 28px;">
-                <div style="width: 64px; height: 64px; border-radius: 50%; background: #F0FDF4; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
-                    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5">
-                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                    </svg>
-                </div>
-                
-                <h2 style="font-family: 'Space Grotesk', sans-serif; font-size: 26px; font-weight: 700; color: #0F172A; margin: 0 0 12px 0;">Payment Confirmed</h2>
-                
-                <p style="font-size: 16px; color: #334155; line-height: 1.6; margin: 0 0 24px 0; font-weight: 500;">
-                    Thank you! We'll reach out to you directly via phone and email.
-                </p>
-
-                <button type="button" id="bga-thank-you-close-btn" class="bga-btn-primary" style="height: 48px; width: 100%; border-radius: 100px; font-size: 15px; font-weight: 700;">
-                    Close
-                </button>
-            </div>
-        </div>
-
                 <!-- 10: Footer CTA -->
                 <div id="bga-footer-cta" class="bga-text-center">
                     <h3 class="bga-footer-cta__title">Have questions about your score?</h3>
@@ -949,6 +881,74 @@
             <p style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #cbd5e1; letter-spacing: 0.1em; text-transform: uppercase; margin: 8px 0 0 0;">&copy; 2026 Builtium. All rights reserved.</p>
         </div>
     </footer>
+
+    <!-- DIAGNOSTIC FINDING MODAL (FOR HEALTH CHECK CARDS) -->
+    <div class="bga-modal-backdrop" id="bga-diagnostic-modal" style="display: none;" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="bga-modal-cat-name" aria-describedby="bga-modal-finding">
+        <div class="bga-modal-card">
+            <button class="bga-modal-close" id="bga-modal-close-btn" aria-label="Close diagnostic modal">&times;</button>
+            <div class="bga-modal-header">
+                <div class="bga-modal-category">
+                    <span class="bga-modal-category__icon" id="bga-modal-icon" aria-hidden="true"></span>
+                    <h3 class="bga-modal-category__name" id="bga-modal-cat-name">Discoverability</h3>
+                </div>
+                <div class="bga-modal-score">
+                    <span class="bga-modal-score__badge" id="bga-modal-badge">Critical</span>
+                    <span class="bga-modal-score__pct" id="bga-modal-pct">41%</span>
+                </div>
+            </div>
+            
+            <div class="bga-modal-body">
+                <div class="bga-modal-block">
+                    <span class="bga-modal-block__label">DIAGNOSTIC FINDING</span>
+                    <p class="bga-modal-block__text" id="bga-modal-finding">
+                        Search intent is the cheapest, highest-fit demand you can capture.
+                    </p>
+                </div>
+
+                <div class="bga-modal-block bga-modal-block--impact">
+                    <span class="bga-modal-block__label">BUSINESS IMPACT</span>
+                    <p class="bga-modal-block__text" id="bga-modal-impact">
+                        High-intent prospects looking for your services cannot find your business in local search results or Google Maps, directing revenue to competitors.
+                    </p>
+                </div>
+
+                <div class="bga-modal-block bga-modal-block--fix">
+                    <span class="bga-modal-block__label">RECOMMENDED FIX</span>
+                    <p class="bga-modal-block__text" id="bga-modal-fix">
+                        Claim and fully optimize your Google Business Profile, align NAP consistency across directories, and establish a weekly review collection cadence.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="bga-modal-footer">
+                <button class="bga-btn-primary bga-btn-unlock-trigger" style="height: 44px; font-size: 14px;">
+                    Unlock Actionable Blueprint
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PAYMENT CONFIRMATION THANK YOU MODAL -->
+    <div class="bga-modal-backdrop" id="bga-payment-thank-you" style="display: none;" role="dialog" aria-modal="true">
+        <div class="bga-modal-card" style="text-align: center; max-width: 440px; padding: 36px 28px;">
+            <div style="width: 64px; height: 64px; border-radius: 50%; background: #F0FDF4; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+            </div>
+            
+            <h2 style="font-family: 'Space Grotesk', sans-serif; font-size: 26px; font-weight: 700; color: #0F172A; margin: 0 0 12px 0;">Payment Confirmed</h2>
+            
+            <p style="font-size: 16px; color: #334155; line-height: 1.6; margin: 0 0 24px 0; font-weight: 500;">
+                Thank you! We'll reach out to you directly via phone and email.
+            </p>
+
+            <button type="button" id="bga-thank-you-close-btn" class="bga-btn-primary" style="height: 48px; width: 100%; border-radius: 100px; font-size: 15px; font-weight: 700;">
+                Close
+            </button>
+        </div>
+    </div>
 
     <!-- Paystack JS -->
     <script src="https://js.paystack.co/v1/inline.js" async></script>

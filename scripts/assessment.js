@@ -1820,7 +1820,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-            // Post completion metrics silently to Builtium Audit Bot via Vercel API
+            // Post completion metrics & all 55 answers to Builtium Audit Bot via Vercel API
             try {
                 fetch("/api/audit-log", {
                     method: "POST",
@@ -1835,6 +1835,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             phone: userData.phone,
                             finalResult: activeStage ? activeStage.name : `${totalPercentage}%`,
                             scores: scores,
+                            answers: parsedAnswers,
                             paid: isPaidStatus
                         }
                     })

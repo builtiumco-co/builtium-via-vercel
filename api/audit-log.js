@@ -42,7 +42,7 @@ module.exports = async function handler(req, res) {
         );
       }
 
-      return res.status(200).json({ success: true, message: 'Session started.' });
+      return res.status(200).json({ success: true, message: 'Session started notification sent.' });
     }
 
     if (action === 'update' && data.type === 'completion') {
@@ -51,25 +51,77 @@ module.exports = async function handler(req, res) {
         .map(([k, v]) => `**${k}**: ${v}/5`)
         .join(' | ');
 
-      const embed = {
-        title: '🎯 Digital Growth Audit Completed!',
-        color: data.paid ? 0x10b981 : 0xf59e0b, // Green if paid, Amber if completed
-        fields: [
-          { name: '🏢 Business Name', value: data.businessName || 'N/A', inline: true },
-          { name: '📧 Email', value: data.email || 'N/A', inline: true },
-          { name: '📞 Phone', value: data.phone || 'N/A', inline: true },
-          { name: '🏁 Final Stage Result', value: `**${data.finalResult || 'Audit Completed'}**`, inline: false },
-          { name: '📈 Category Scores', value: scoreFields || 'Scores recorded', inline: false },
-          { name: '💳 Paid Status', value: data.paid ? '✅ Purchased (₦500)' : '⏳ Completed (Not Purchased)', inline: true },
-          { name: '🆔 Session ID', value: `\`${sessionId}\``, inline: true }
-        ],
-        timestamp: new Date().toISOString(),
-        footer: { text: 'Builtium Audit Bot • Audit Evaluation' }
-      };
+      const mainFields = [
+        { name: '🏢 Business Name', value: data.businessName || 'N/A', inline: true },
+        { name: '📧 Email', value: data.email || 'N/A', inline: true },
+        { name: '📞 Phone', value: data.phone || 'N/A', inline: true },
+        { name: '🏁 Final Stage Result', value: `**${data.finalResult || 'Audit Completed'}**`, inline: false },
+        { name: '📈 Category Scores', value: scoreFields || 'Scores recorded', inline: false },
+        { name: '💳 Paid Status', value: data.paid ? '✅ Purchased (₦500)' : '⏳ Completed (Not Purchased)', inline: true },
+        { name: '🆔 Session ID', value: `\`${sessionId}\``, inline: true }
+      ];
 
-      await sendDiscordWebhook(AUDIT_WEBHOOK_URL, embed, 'Builtium Audit Bot');
+      // Format full 55 answers grouped by category section
+      const sectionFields = [];
+      if (Array.isArray(data.answers) && data.answers.length > 0) {
+        const sectionsMap = {};
+        data.answers.forEach(item => {
+          const sec = item.section || 'GENERAL';
+          if (!sectionsMap[sec]) sectionsMap[sec] = [];
+          const ptsStr = item.points !== null && item.points !== undefined ? ` [${item.points} pts]` : '';
+          sectionsMap[sec].push(`• **Q${item.qNum}** (${item.question}): ${item.answer}${ptsStr}`);
+        });
 
-      return res.status(200).json({ success: true, message: 'Audit completed and Discord notification sent.' });
+        for (const [secName, qList] of Object.entries(sectionsMap)) {
+          let content = qList.join('\n');
+          // Truncate to Discord 1024 char field limit if necessary
+          if (content.length > 1000) {
+            content = content.substring(0, 990) + '\n...[truncated]';
+          }
+          sectionFields.push({
+            name: `📋 Section: ${secName}`,
+            value: content || 'No answers',
+            inline: false
+          });
+        }
+      }
+
+      // Combine main fields and section fields
+      const allFields = [...mainFields, ...sectionFields];
+
+      // If total fields > 25 (Discord embed limit), split into 2 embeds in 1 webhook payload
+      if (allFields.length > 20) {
+        const embed1 = {
+          title: '🎯 Digital Growth Audit Completed! (Overview & Initial Sections)',
+          color: data.paid ? 0x10b981 : 0xf59e0b,
+          fields: allFields.slice(0, 15),
+          timestamp: new Date().toISOString(),
+          footer: { text: 'Builtium Audit Bot • Report Part 1' }
+        };
+
+        const embed2 = {
+          title: '📋 Full 55 Answers Breakdown (Continued)',
+          color: data.paid ? 0x10b981 : 0xf59e0b,
+          fields: allFields.slice(15),
+          timestamp: new Date().toISOString(),
+          footer: { text: 'Builtium Audit Bot • Full Answers' }
+        };
+
+        await sendDiscordWebhook(AUDIT_WEBHOOK_URL, embed1, 'Builtium Audit Bot');
+        await sendDiscordWebhook(AUDIT_WEBHOOK_URL, embed2, 'Builtium Audit Bot');
+      } else {
+        const embed = {
+          title: '🎯 Digital Growth Audit Completed!',
+          color: data.paid ? 0x10b981 : 0xf59e0b,
+          fields: allFields,
+          timestamp: new Date().toISOString(),
+          footer: { text: 'Builtium Audit Bot • Full Audit Evaluation' }
+        };
+
+        await sendDiscordWebhook(AUDIT_WEBHOOK_URL, embed, 'Builtium Audit Bot');
+      }
+
+      return res.status(200).json({ success: true, message: 'Audit completion and full 55 answers delivered to Discord.' });
     }
 
     return res.status(200).json({ success: true, message: 'Audit log received.' });
