@@ -1,3 +1,46 @@
+// --- REGIONAL PRICING ---
+window.bgaUpsellCurrency = 'NGN';
+window.bgaUpsellAmount = 5000;
+
+async function checkAndApplyRegionalPricing() {
+    let countryCode = localStorage.getItem('user_country');
+    
+    if (!countryCode) {
+        try {
+            const res = await fetch('https://ipapi.co/json/');
+            const data = await res.json();
+            if (data && data.country_code) {
+                countryCode = data.country_code;
+                localStorage.setItem('user_country', countryCode);
+            }
+        } catch (e) {
+            console.warn('Could not fetch location, defaulting to NGN', e);
+        }
+    }
+
+    if (countryCode && countryCode !== 'NG') {
+        window.bgaUpsellCurrency = 'USD';
+        window.bgaUpsellAmount = 5;
+        
+        const updateDOM = () => {
+            const sym = document.querySelector('.bga-blueprint-price__symbol');
+            const amt = document.querySelector('.bga-blueprint-price__amount');
+            const strike = document.querySelector('.bga-blueprint-strike');
+            
+            if (sym) sym.textContent = '$';
+            if (amt) amt.textContent = '5';
+            if (strike) strike.textContent = 'Estimated value $50+';
+        };
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', updateDOM);
+        } else {
+            updateDOM();
+        }
+    }
+}
+checkAndApplyRegionalPricing();
+
 document.addEventListener('DOMContentLoaded', () => {
     // Prevent running on pages that do not have BGA elements
     if (!document.getElementById('bga-intro')) return;
@@ -1657,8 +1700,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 const handler = PaystackPop.setup({
                     key: paystackPublicKey,
                     email: userEmail,
-                    amount: 100 * 100, // ₦100 in kobo (10,000 kobo)
-                    currency: 'NGN',
+                    amount: window.bgaUpsellAmount * 100, // in kobo or cents
+                    currency: window.bgaUpsellCurrency,
                     ref: 'builtium_' + Math.floor((Math.random() * 1000000000) + 1),
                     callback: function(response) {
                         btn.textContent = "Payment Confirmed!";
